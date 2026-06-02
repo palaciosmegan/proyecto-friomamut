@@ -1,32 +1,14 @@
 import { motion } from 'framer-motion'
 import { clsx } from "clsx"
-import { useState } from 'react'
-import { Diagram } from './Diagram'
-import { Chip } from './Chip'
+import type { Ambiente } from '../config/ambientes.config'
 
-const TABS = [
-    {
-        id: 1, label: 'Tunel 1', 
-        content: (
-            <> 
-                <Diagram title="Sample Diagram" data="This." image="/tunel.png" />
-                <Chip text="En tiempo real" />
-            </>
-        )
-    },
-    {
-        id: 2, label: 'Tunel 2', 
-        content: (
-            <> 
-                <Diagram title="Sample Diagram" data="This." image="/tunel.png" />
-                <Chip text="En tiempo real" />
-            </>
-        )
-    },
-]
+interface NavProps {
+    TABS: Ambiente[],
+    activeId: number,
+    onSelect: (id: number) => void
+}
 
-export const Nav = () => {
-    const [activeTab, setActiveTab] = useState(TABS[0].id)
+export const Nav = ({ TABS, activeId, onSelect }: NavProps) => {
     return (
         <header className="
         w-full min-h-16 p-20
@@ -41,11 +23,11 @@ export const Nav = () => {
                 {TABS.map(({id, label}) => (
                 <button
                     key={id}
-                    onClick={() => setActiveTab(id)}
+                    onClick={() => onSelect(id)}
                     className="relative px-4 py-1.5 rounded-full text-sm font-medium
                        transition-colors duration-200 z-10"
                 >
-                    {activeTab === id && (
+                    {activeId === id && (
                         <motion.span
                             layoutId="active-tab-pill"
                             className="absolute inset-0 rounded-full
@@ -60,7 +42,7 @@ export const Nav = () => {
 
                     <span className={clsx(
                         'relative z-10 transition-colors duration-200',
-                        activeTab === id
+                        activeId === id
                             ? 'text-[var(--color-text-inverse)]'
                             : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
                     )}>

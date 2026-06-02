@@ -1,18 +1,20 @@
 import { Nav } from "./ui/Nav"
-import { Chip } from "./ui/Chip"
 import { DataButton } from "./ui/DataButton"
-import { Diagram } from "./ui/Diagram"
+import { AMBIENTES } from "./config/ambientes.config"
+import { useState } from "react"
 
 export const Viewer = () => {
+    const [activeTab, setActiveTab] = useState(AMBIENTES[0].id)
+    const active = AMBIENTES.find(a => a.id === activeTab)!
+
     return (
         <div>
-            <Nav />
+            <Nav TABS={AMBIENTES}
+                activeId={activeTab}
+                onSelect={setActiveTab} />
             <main>
-                da hom
-                <h1>displaying all the components for tEsTiNg</h1>
                 <DataButton metric={123} descriptionShortened="shortened desc" unit="°C" />
-                <Diagram title="Sample Diagram" data="This." image="/tunel.png" />
-                <Chip text="En tiempo real" />
+                {active.content}
             </main>
         </div>
     )
