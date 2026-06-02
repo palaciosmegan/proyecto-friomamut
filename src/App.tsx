@@ -1,0 +1,21 @@
+import { Routes, Route, BrowserRouter } from 'react-router-dom'
+import { Home } from './pages/Home'
+import { Layout } from './Layout/Layout'
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />} >
+          <Route path="/" element={<Home />} />
+        </Route>
+
+        {/* <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+          <Route path="/users" element={<Users />} />
+        </Route> */}
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
