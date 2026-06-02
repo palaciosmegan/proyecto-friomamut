@@ -10,10 +10,8 @@ export const Nav = () => {
 
     return (
         <header className="
-      w-full min-h-16 px-6
+      w-full min-h-16 p-20
       flex items-center justify-between
-      bg-[var(--color-abyss)]/80
-      backdrop-blur-xl
       border-b border-[var(--color-border-subtle)]
       shadow-[var(--shadow-card)]
       sticky top-0 z-50
