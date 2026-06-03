@@ -76,7 +76,6 @@ export const Diagram = memo(({ title, image, ambienteId }: DiagramProps) => {
 
 	return (
 		<div className="flex flex-col h-full">
-			<h2 className="text-lg font-semibold px-4 py-2 shrink-0">{title}</h2>
 			<div className="relative w-full flex-1 overflow-hidden">
 				<img
 					src={image}

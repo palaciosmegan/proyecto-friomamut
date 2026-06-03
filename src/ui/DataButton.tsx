@@ -23,18 +23,18 @@ export const DataButton = memo(({
       onClick={onToggle}
       className={clsx(
         'aspect-[4/3] w-24 rounded-lg border flex flex-col items-center justify-center gap-2 select-none outline-none transition-all duration-150 active:scale-90 bg-[var(--color-deep)]',
-        !habilitado && 'border-[var(--color-border-default)] opacity-50',
+        !habilitado && 'border-[var(--color-border-default)]',
         habilitado && 'border-green-500/60',
       )}
     >
       <div className="flex justify-between items-start w-full px-2">
         <FiberManualRecordIcon
-          className={habilitado ? 'text-green-400' : 'text-[var(--color-text-muted)]'}
+          className={habilitado ? 'text-green-400 animate-pulse' : 'text-[var(--color-text-muted)]'}
           style={{ fontSize: 10 }}
         />
         <p className={clsx(
           'text-xs font-medium tracking-wide transition-colors duration-200',
-          habilitado ? 'text-green-400' : 'text-[var(--color-text-muted)]'
+          habilitado ? 'text-gray-400' : 'text-[var(--color-text-muted)]'
         )}>
           {descriptionShortened.toUpperCase()}
         </p>
@@ -49,7 +49,7 @@ export const DataButton = memo(({
         </span>
         <span className={clsx(
           'text-sm font-normal transition-colors duration-200',
-          habilitado ? 'text-green-400' : 'text-[var(--color-text-muted)]'
+          habilitado ? 'text-gray-400' : 'text-[var(--color-text-muted)]'
         )}>
           {unit}
         </span>
