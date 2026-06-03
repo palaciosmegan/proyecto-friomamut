@@ -6,11 +6,11 @@ import { ChipStatus } from '../types/ui-types'
 
 const CONFIG = {
   [ChipStatus.LIVE]: {
-    label:     'En tiempo real',
-    bg:        'bg-green-950',
-    text:      'text-green-400',
-    border:    'border-green-800',
-    icon:      (
+    label: 'En tiempo real',
+    bg: 'bg-green-950',
+    text: 'text-green-400',
+    border: 'border-green-800',
+    icon: (
       <FiberManualRecordIcon
         className="text-green-400 animate-pulse"
         style={{ fontSize: 10 }}
@@ -18,11 +18,11 @@ const CONFIG = {
     ),
   },
   [ChipStatus.RECONNECTING]: {
-    label:     'Reconectando',
-    bg:        'bg-yellow-950',
-    text:      'text-yellow-400',
-    border:    'border-yellow-800',
-    icon:      (
+    label: 'Reconectando',
+    bg: 'bg-yellow-950',
+    text: 'text-yellow-400',
+    border: 'border-yellow-800',
+    icon: (
       <SyncIcon
         className="text-yellow-400 animate-spin"
         style={{ fontSize: 13 }}
@@ -30,11 +30,11 @@ const CONFIG = {
     ),
   },
   [ChipStatus.ERROR]: {
-    label:     'Error',
-    bg:        'bg-red-950',
-    text:      'text-red-400',
-    border:    'border-red-800',
-    icon:      (
+    label: 'Error',
+    bg: 'bg-red-950',
+    text: 'text-red-400',
+    border: 'border-red-800',
+    icon: (
       <ErrorIcon
         className="text-red-400"
         style={{ fontSize: 13 }}
