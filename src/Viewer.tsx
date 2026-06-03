@@ -1,21 +1,28 @@
-import { Nav } from "./ui/Nav"
-import { DataButton } from "./ui/DataButton"
-import { AMBIENTES } from "./config/ambientes.config"
-import { useState } from "react"
+import { useState } from 'react'
+import { Nav } from './ui/Nav'
+import { AMBIENTES } from './config/ambientes.config'
 
 export const Viewer = () => {
-    const [activeTab, setActiveTab] = useState(AMBIENTES[0].id)
-    const active = AMBIENTES.find(a => a.id === activeTab)!
+  const [activeTab, setActiveTab] = useState(AMBIENTES[0].id)
 
-    return (
-        <div>
-            <Nav TABS={AMBIENTES}
-                activeId={activeTab}
-                onSelect={setActiveTab} />
-            <main>
-                <DataButton metric={123} descriptionShortened="shortened desc" unit="°C" />
-                {active.content}
-            </main>
-        </div>
-    )
+  return (
+    <div className="w-[1200px] h-[800px] flex flex-col overflow-hidden">
+      <Nav
+        TABS={AMBIENTES}
+        activeId={activeTab}
+        onSelect={setActiveTab}
+      />
+
+      <main className="flex-1 overflow-hidden">
+        {AMBIENTES.map(a => (
+          <div
+            key={a.id}
+            className={a.id === activeTab ? 'block h-full' : 'hidden'}
+          >
+            {a.content}
+          </div>
+        ))}
+      </main>
+    </div>
+  )
 }
