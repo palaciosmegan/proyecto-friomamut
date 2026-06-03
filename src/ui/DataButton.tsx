@@ -24,7 +24,7 @@ export const DataButton = memo(({
       className={clsx(
         'aspect-[4/3] w-24 rounded-lg border flex flex-col items-center justify-center gap-2 select-none outline-none transition-all duration-150 active:scale-90 bg-[var(--color-deep)]',
         !habilitado && 'border-[var(--color-border-default)] opacity-50',
-        habilitado && 'border-green-500/60 shadow-[0_0_12px_rgba(34,197,94,0.25)]',
+        habilitado && 'border-green-500/60',
       )}
     >
       <div className="flex justify-between items-start w-full px-2">
@@ -36,7 +36,7 @@ export const DataButton = memo(({
           'text-xs font-medium tracking-wide transition-colors duration-200',
           habilitado ? 'text-green-400' : 'text-[var(--color-text-muted)]'
         )}>
-          {descriptionShortened.slice(0, 3).toUpperCase()}
+          {descriptionShortened.toUpperCase()}
         </p>
       </div>
 
