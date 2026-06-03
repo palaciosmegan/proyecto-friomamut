@@ -18,7 +18,8 @@ const FILA_Y: Record<Fila, number> = {
 function calcColumnaX(sensores: SensorMock[]): Record<string, number> {
     const xMin = 0.18
     const xMax = 0.78
-    const columnas = [...new Set(sensores.map(s => s.columna))].sort()
+    const columnas = [...new Set(sensores.map(s => s.columna))]
+        .sort((a, b) => parseInt(a.slice(1)) - parseInt(b.slice(1)))
     const n = columnas.length
     return Object.fromEntries(
         columnas.map((col, i) => [
@@ -27,6 +28,38 @@ function calcColumnaX(sensores: SensorMock[]): Record<string, number> {
         ])
     )
 }
+
+interface SensorPinProps {
+    sensor: SensorMock
+    x: number
+    y: number
+    onToggle: (id: string) => void
+}
+
+const SensorPin = memo(({ sensor, x, y, onToggle }: SensorPinProps) => {
+    const handleClick = useCallback(() => onToggle(sensor.id), [sensor.id, onToggle])
+
+    return (
+        <div
+            className="absolute"
+            style={{
+                left: `${x * 100}%`,
+                top: `${y * 100}%`,
+                transform: 'translate(-50%, -50%)',
+            }}
+        >
+            <DataButton
+                metric={sensor.valor}
+                descriptionShortened={sensor.id}
+                unit="°C"
+                habilitado={sensor.habilitado === true}
+                onToggle={handleClick}
+            />
+        </div>
+    )
+})
+
+SensorPin.displayName = 'SensorPin'
 
 export const Diagram = memo(({ title, image, ambienteId }: DiagramProps) => {
     const [sensores, setSensores] = useState<SensorMock[]>(
@@ -44,34 +77,20 @@ export const Diagram = memo(({ title, image, ambienteId }: DiagramProps) => {
     return (
         <div className="flex flex-col h-full">
             <h2 className="text-lg font-semibold px-4 py-2 shrink-0">{title}</h2>
-
-            {/* Contenedor relativo — la imagen define las dimensiones,
-          los sensores se posicionan sobre ella en porcentajes */}
             <div className="relative w-full flex-1 overflow-hidden">
                 <img
                     src={image}
                     alt={title}
                     className="w-full object-contain select-none"
                 />
-
                 {sensores.map(s => (
-                    <div
+                    <SensorPin
                         key={s.id}
-                        className="absolute"
-                        style={{
-                            left: `${colX[s.columna] * 100}%`,
-                            top: `${FILA_Y[s.fila] * 100}%`,
-                            transform: 'translate(-50%, -50%)',
-                        }}
-                    >
-                        <DataButton
-                            metric={s.valor}
-                            descriptionShortened={s.id}
-                            unit="°C"
-                            habilitado={s.habilitado}
-                            onToggle={() => handleToggle(s.id)}
-                        />
-                    </div>
+                        sensor={s}
+                        x={colX[s.columna]}
+                        y={FILA_Y[s.fila]}
+                        onToggle={handleToggle}
+                    />
                 ))}
             </div>
         </div>

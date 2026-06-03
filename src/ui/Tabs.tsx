@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
 export type TabItem = {
   id: string
   label: string
-  content: React.ReactNode
+  content: ReactNode
 }
 
 type TabsProps = {

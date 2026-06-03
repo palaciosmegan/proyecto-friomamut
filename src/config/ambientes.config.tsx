@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { ChipStatus } from '../types/ui-types'
 import { Chip } from '../ui/Chip'
 import { Diagram } from '../ui/Diagram'
@@ -5,7 +6,7 @@ import { Diagram } from '../ui/Diagram'
 export type Ambiente = {
   id: number
   label: string
-  content: React.ReactNode
+  content: ReactNode
 }
 
 export const AMBIENTES: Ambiente[] = [
