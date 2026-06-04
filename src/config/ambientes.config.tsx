@@ -20,7 +20,7 @@ export const AMBIENTES: Ambiente[] = [
     content: (
       <>
         <Chip status={ChipStatus.LIVE} />
-        <Diagram title="Túnel 1" ambienteId={1} image={imagenes[0].imagen} />
+        <Diagram ambienteId={1} image={imagenes[0].imagen} />
       </>
     ),
   },
@@ -30,7 +30,7 @@ export const AMBIENTES: Ambiente[] = [
     content: (
       <>
         <Chip status={ChipStatus.RECONNECTING} />
-        <Diagram title="Túnel 2" ambienteId={2} image={imagenes[0].imagen} />
+        <Diagram ambienteId={2} image={imagenes[0].imagen} />
       </>
     ),
   },
@@ -40,7 +40,7 @@ export const AMBIENTES: Ambiente[] = [
     content: (
       <>
         <Chip status={ChipStatus.ERROR} />
-        <Diagram title="Túnel 3" ambienteId={3} image={imagenes[0].imagen} />
+        <Diagram ambienteId={3} image={imagenes[0].imagen} />
       </>
     ),
   },
@@ -50,7 +50,7 @@ export const AMBIENTES: Ambiente[] = [
     content: (
       <>
         <Chip status={ChipStatus.LIVE} />
-        <Diagram title="Túnel 4" ambienteId={4} image={imagenes[0].imagen} />
+        <Diagram ambienteId={4} image={imagenes[0].imagen} />
       </>
     ),
   },
@@ -59,7 +59,7 @@ export const AMBIENTES: Ambiente[] = [
     label: 'Túnel 5',
     content: (
       <>
-        <Diagram title="Túnel 5" ambienteId={5} image={imagenes[0].imagen} />
+        <Diagram ambienteId={5} image={imagenes[0].imagen} />
       </>
     ),
   }
