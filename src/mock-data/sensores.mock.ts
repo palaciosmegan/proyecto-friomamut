@@ -9,7 +9,7 @@
 // P representa las columnas de los 8 palets
 // los códigos de posisición de los sensores en las cajas van del 1 al 32
 // los códigos de posición de los sensores de ambiente y retorno son 101 y 102 respectivamente
-export type Fila = 'ext_superior' | 'int_superior' | 'int_inferior' | 'ext_inferior'
+export type Fila = 'ext_superior' | 'int_superior' | 'int_inferior' | 'ext_inferior' | 'ambiente' | 'retorno'
 
 export type SensorMock = {
   posicion: number
@@ -20,7 +20,7 @@ export type SensorMock = {
   habilitado: boolean
 }
 
-export const MOCK_SENSORES: Record<number, SensorMock[]> = {
+export const MOCK_SENSORES: Record<number, SensorMock[] | []> = {
   1: [
     { posicion: 1, columna: "P1", fila: "ext_superior", id: "T01 S01", valor: -18.4, habilitado: true },
     { posicion: 2, columna: "P1", fila: "int_superior", id: "T01 S02", valor: -19.1, habilitado: true },
@@ -38,8 +38,8 @@ export const MOCK_SENSORES: Record<number, SensorMock[]> = {
     { posicion: 22, columna: "P3", fila: "ext_inferior", id: "T01 S14", valor: -20.4, habilitado: true },
     { posicion: 23, columna: "P4", fila: "int_inferior", id: "T01 S15", valor: -19.2, habilitado: true },
     { posicion: 24, columna: "P4", fila: "ext_inferior", id: "T01 S16", valor: -21.5, habilitado: true },
-    { posicion: 101, columna: "P4", fila: "ext_inferior", id: "A01", valor: -21.5, habilitado: true }, //ambiente
-    { posicion: 102, columna: "P4", fila: "ext_inferior", id: "A02", valor: -21.5, habilitado: true }, //retorno
+    { posicion: 101, columna: "P4", fila: "ambiente", id: "A01", valor: -21.5, habilitado: true }, //ambiente
+    { posicion: 102, columna: "P4", fila: "retorno", id: "A02", valor: -21.5, habilitado: true }, //retorno
   ],
   2: [
     { posicion: 1, columna: "P1", fila: "ext_superior", id: "T02 S01", valor: -22.1, habilitado: true },
@@ -109,4 +109,5 @@ export const MOCK_SENSORES: Record<number, SensorMock[]> = {
     { posicion: 101, columna: "P4", fila: "ext_inferior", id: "A01", valor: -21.5, habilitado: true }, //ambiente
     { posicion: 102, columna: "P4", fila: "ext_inferior", id: "A02", valor: -21.5, habilitado: true }, //retorno
   ],
+  5: [],
 }

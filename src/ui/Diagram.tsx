@@ -1,6 +1,7 @@
 import { useState, useCallback, memo, useMemo } from 'react'
 import { MOCK_SENSORES, type SensorMock, type Fila } from '../mock-data/sensores.mock'
 import { DataButton } from './DataButton'
+import { Message } from './Message'
 
 interface DiagramProps {
 	title: string
@@ -13,6 +14,8 @@ const FILA_Y: Record<Fila, number> = {
 	int_superior: 0.18,
 	int_inferior: 0.58,
 	ext_inferior: 0.82,
+	ambiente: 0.01,
+	retorno: 0.9,
 }
 
 function calcColumnaX(sensores: SensorMock[]): Record<string, number> {
@@ -49,12 +52,12 @@ const SensorPin = memo(({ sensor, x, y, onToggle }: SensorPinProps) => {
 			}}
 		>
 			<DataButton
-				metric={sensor.valor}
-				descriptionShortened={sensor.id}
-				unit="°C"
+				valor={sensor.valor}
+				id={sensor.id}
+				unidad="°C"
 				habilitado={sensor.habilitado === true}
-				onToggle={handleClick}
-			/>
+				fila={sensor.fila}
+				onToggle={handleClick}  />
 		</div>
 	)
 })
@@ -62,6 +65,7 @@ const SensorPin = memo(({ sensor, x, y, onToggle }: SensorPinProps) => {
 SensorPin.displayName = 'SensorPin'
 
 export const Diagram = memo(({ title, image, ambienteId }: DiagramProps) => {
+
 	const [sensores, setSensores] = useState<SensorMock[]>(
 		() => MOCK_SENSORES[ambienteId] ?? []
 	)
@@ -82,6 +86,9 @@ export const Diagram = memo(({ title, image, ambienteId }: DiagramProps) => {
 					alt={title}
 					className="w-full object-contain select-none"
 				/>
+				{sensores.length === 0 && (
+					<Message />
+				)}
 				{sensores.map(s => (
 					<SensorPin
 						key={s.id}

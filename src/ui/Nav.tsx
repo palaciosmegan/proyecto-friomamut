@@ -12,7 +12,7 @@ export const Nav = ({ TABS, activeId, onSelect }: NavProps) => {
 	return (
 		<header
 			className="
-        w-full mt-10
+        w-full mt-8
         flex items-center justify-center
         "
 		>
