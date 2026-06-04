@@ -27,7 +27,7 @@ export const DataButton = memo(({
         habilitado ? 'border-green-500/60' : 'border-[var(--color-border-default)]',
       )}
     >
-      <div className="flex justify-between items-start w-full">
+      <div className="flex justify-between items-start w-full px-2">
         <FiberManualRecordIcon
           className={habilitado ? 'text-green-400 animate-pulse' : 'text-[var(--color-text-muted)]'}
           style={{ fontSize: 10 }}

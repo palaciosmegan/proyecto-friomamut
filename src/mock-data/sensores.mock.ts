@@ -1,11 +1,11 @@
-// Columnas: pares de posiciones agrupadas de a 2 por palet
+// Columnas
 //   1,2,17,18 → P1 | 3,4,19,20 → P2 | 5,6,21,22 → P3 | 7,8,23,24 → P4
 //   9,10,25,26 → P5 | 11,12,27,28 → P6 | 13,14,29,30 → P7 | 15,16,31,32 → P8
 //
 // Fila: impar → int_*, par → ext_*
 //   1–16  impar → int_superior  | par → ext_superior
 //   17–32 impar → int_inferior  | par → ext_inferior
-//   101 → ambiente | 102 → retorno (excepciones, no siguen la regla de paridad)
+//   101 → ambiente | 102 → retorno
 
 export type Fila = 'ext_superior' | 'int_superior' | 'int_inferior' | 'ext_inferior'
 
