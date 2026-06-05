@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react'
-import { ChipStatus } from '../types/ui-types'
-import { Chip } from '../ui/Chip'
 import { Diagram } from '../ui/Diagram'
 import _imagenes from '../assets/imagenes_ambientes.json'
 
@@ -16,10 +14,9 @@ export type Ambiente = {
 export const AMBIENTES: Ambiente[] = [
   {
     id: 1,
-    label: 'Túnel 1',
+    label: 'Túnel 1 adfghjkksgfhjk',
     content: (
       <>
-        <Chip status={ChipStatus.LIVE} />
         <Diagram ambienteId={1} image={imagenes[0].imagen} />
       </>
     ),
@@ -29,7 +26,6 @@ export const AMBIENTES: Ambiente[] = [
     label: 'Túnel 2',
     content: (
       <>
-        <Chip status={ChipStatus.RECONNECTING} />
         <Diagram ambienteId={2} image={imagenes[0].imagen} />
       </>
     ),
@@ -39,7 +35,6 @@ export const AMBIENTES: Ambiente[] = [
     label: 'Túnel 3',
     content: (
       <>
-        <Chip status={ChipStatus.ERROR} />
         <Diagram ambienteId={3} image={imagenes[0].imagen} />
       </>
     ),
@@ -49,7 +44,6 @@ export const AMBIENTES: Ambiente[] = [
     label: 'Túnel 4',
     content: (
       <>
-        <Chip status={ChipStatus.LIVE} />
         <Diagram ambienteId={4} image={imagenes[0].imagen} />
       </>
     ),

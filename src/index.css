@@ -69,6 +69,9 @@
   --spacing-20: 5rem;
   --spacing-24: 6rem;
 
+  /* UI component base */
+  --color-ui-dark: #0e1117;
+
   /* Box shadows */
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
   --shadow-raised: 0 8px 40px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -194,7 +197,6 @@
   --container-2xl: 1440px;
 }
 
-
 @layer base {
   *,
   *::before,
@@ -210,6 +212,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    width: 1200px;
+    height: 800px;
+    overflow: hidden;
   }
 
   body {
@@ -222,8 +227,9 @@
     background-color: var(--color-abyss);
     background-image: var(--gradient-bg);
     background-attachment: fixed;
-    min-height: 100vh;
-    overflow-x: hidden;
+    width: 1200px;
+    height: 800px;
+    overflow: hidden;
   }
 
   /* Noise texture */
@@ -355,6 +361,25 @@
 }
 
 @layer components {
+  /* --- Glass pill (Chip, Message) --- */
+  /*   Set --glow-r/g/b on the element to tint border + shadow  */
+  .glass-pill {
+    --glow-r: 255;
+    --glow-g: 255;
+    --glow-b: 255;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-full);
+    background-color: var(--color-ui-dark);
+    border: 1px solid rgba(var(--glow-r), var(--glow-g), var(--glow-b), 0.25);
+    box-shadow:
+      0 0 0 1px rgba(var(--glow-r), var(--glow-g), var(--glow-b), 0.12),
+      0 0 24px rgba(var(--glow-r), var(--glow-g), var(--glow-b), 0.22),
+      0 0 60px rgba(var(--glow-r), var(--glow-g), var(--glow-b), 0.1),
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
   /* --- Layout --- */
   .container {
     width: 100%;
@@ -752,6 +777,9 @@
   .animate-glow {
     animation: pulse-glow 3s ease-in-out infinite;
   }
+  .animate-pulse-green {
+    animation: pulse-green 2s ease-in-out infinite;
+  }
 
   .delay-1 {
     animation-delay: 100ms;
@@ -813,6 +841,15 @@
   50% {
     transform: translateY(-8px);
   }
+}
+@keyframes pulse-green {
+  0%,
+  100% {
+    color: rgb(74 222 128);
+  } /* green-400 */
+  50% {
+    color: rgb(107 114 128);
+  } /* text-muted approx */
 }
 
 @media (max-width: 768px) {

@@ -60,7 +60,6 @@ export const Diagram = memo(({ image, ambienteId }: DiagramProps) => {
 
 	const sensoresGrilla = sensores.filter(s => !POSICIONES_AMBIENTE.includes(s.posicion))
 	const sensoresAmbiente = sensores.filter(s => POSICIONES_AMBIENTE.includes(s.posicion))
-	console.log(sensoresAmbiente)
 
 	return (
 		<div
@@ -72,8 +71,8 @@ export const Diagram = memo(({ image, ambienteId }: DiagramProps) => {
 			) : (
 				<>
 					<div
-						className="grid grid-cols-8 grid-rows-4 gap-2 ml-59 mt-13 mr-72"
-						style={{ gridTemplateRows: '1fr 85px 1fr 1fr 1fr' }}
+						className="grid grid-cols-8 grid-rows-4 gap-2 ml-59 mt-16 mr-72"
+						style={{ gridTemplateRows: '1fr 98px 1fr 1fr 1fr' }}
 					>
 						{sensoresGrilla.map(s => (
 							<div key={s.id} style={getGridPos(s.posicion)}>
