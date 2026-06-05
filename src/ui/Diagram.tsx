@@ -62,16 +62,19 @@ export const Diagram = memo(({ image, ambienteId }: DiagramProps) => {
 	const sensoresAmbiente = sensores.filter(s => POSICIONES_AMBIENTE.includes(s.posicion))
 
 	return (
-		<div
-			className="relative w-[1200px] h-full overflow-hidden bg-no-repeat bg-contain"
-			style={{ backgroundImage: `url(${image})` }}
-		>
+		<div className="relative w-full h-full">
+			<img
+				src={image}
+				alt=""
+				className="w-full max-h-full min-h-[27.2vw] object-fill aspect-[125/56]"
+			/>
+
 			{sensores.length === 0 ? (
 				<Message />
 			) : (
-				<>
+				<div className="absolute inset-0">
 					<div
-						className="grid grid-cols-8 grid-rows-4 gap-2 ml-59 mt-16 mr-72"
+						className="grid grid-cols-8 grid-rows-4 place-items-center gap-2 ml-59 mt-16 mr-72"
 						style={{ gridTemplateRows: '1fr 98px 1fr 1fr 1fr' }}
 					>
 						{sensoresGrilla.map(s => (
@@ -81,14 +84,12 @@ export const Diagram = memo(({ image, ambienteId }: DiagramProps) => {
 						))}
 					</div>
 
-					<div>
-						{sensoresAmbiente.map(s => (
-							<div key={s.id} className={clsx("absolute", s.id === "A01" ? "top-45 left-20" : "right-30 top-45")}>
-								<SensorPin sensor={s} onToggle={handleToggle} />
-							</div>
-						))}
-					</div>
-				</>
+					{sensoresAmbiente.map(s => (
+						<div key={s.id} className={clsx("absolute", s.id === "A01" ? "top-45 left-20" : "right-30 top-45")}>
+							<SensorPin sensor={s} onToggle={handleToggle} />
+						</div>
+					))}
+				</div>
 			)}
 		</div>
 	)

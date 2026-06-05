@@ -10,8 +10,8 @@ type DataButtonProps = Omit<SensorMock, 'posicion' | 'columna'> & {
 }
 
 function sensorLabel(id: string, fila: Fila): string {
-  if (id === 'A01') return 'Ambiente'
-  if (id === 'A02') return 'Retorno'
+  if (id === 'A01') return 'AMBIENTE'
+  if (id === 'A02') return 'RETORNO'
   return `${id} · ${fila.substring(0, 3).toUpperCase()}`
 }
 
@@ -43,7 +43,7 @@ export const DataButton = memo(({
         'select-none outline-none transition-colors duration-150 active:scale-95',
         isActive
           ? 'border-green-500/40 bg-[var(--color-deep)]'
-          : 'border-white/10 bg-gray-500',
+          : 'border-white/10 bg-[#798295]',
       )}
     >
       {isActive && (
@@ -56,8 +56,8 @@ export const DataButton = memo(({
       }
 
       <p className={clsx(
-        'text-[0.6rem] leading-none font-medium mb-1',
-        isActive ? 'text-[#7ab8e8]' : 'text-gray-600'
+        'text-[0.6rem] leading-none font-semibold mb-1',
+        isActive ? 'text-[#7ab8e8]' : 'text-[#c7c7c7]'
       )}>
         {sensorLabel(id, fila)}
       </p>
@@ -66,20 +66,20 @@ export const DataButton = memo(({
         <div className="flex items-baseline gap-[2px]">
           <span className={clsx(
             'text-lg font-bold tabular-nums leading-none',
-            habilitado ? 'text-white' : 'text-gray-600'
+            habilitado ? 'text-white' : 'text-[#c7c7c7]'
           )}>
             {typeof valor === 'number' ? valor.toFixed(1) : '---'}
           </span>
           <span className={clsx(
-            'text-[0.6rem] font-medium leading-none',
-            habilitado ? 'text-[#7ab8e8]' : 'text-gray-600'
+            'text-[0.6rem] font-semibold leading-none',
+            habilitado ? 'text-[#7ab8e8]' : 'text-[#c7c7c7]'
           )}>
             {unidad}
           </span>
         </div>
       ) : (
         <ElectricalServicesIcon
-          className='text-gray-700'
+          className='text-[#c7c7c7]'
           style={{ fontSize: 20 }}
         />
       )}

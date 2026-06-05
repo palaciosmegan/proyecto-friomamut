@@ -6,18 +6,18 @@ export const Viewer = () => {
 	const [activeTab, setActiveTab] = useState(AMBIENTES[0].id)
 
 	return (
-		<div className="w-min-[1200px] w-full h-[800px] flex flex-col overflow-hidden">
+		<div className="flex flex-col h-dvh overflow-hidden justify-center">
 			<Nav
 				TABS={AMBIENTES}
 				activeId={activeTab}
 				onSelect={setActiveTab}
 			/>
 
-			<main className="flex-1 overflow-hidden">
+			<main className="flex-1 overflow-hidden pb-[30px]">
 				{AMBIENTES.map(a => (
 					<div
 						key={a.id}
-						className={a.id === activeTab ? 'block h-full' : 'hidden'}
+						className={a.id === activeTab ? 'h-full' : 'hidden'}
 					>
 						{a.content}
 					</div>

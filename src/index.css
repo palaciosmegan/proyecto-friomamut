@@ -212,8 +212,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    width: 1200px;
-    height: 800px;
     overflow: hidden;
   }
 
@@ -227,8 +225,6 @@
     background-color: var(--color-abyss);
     background-image: var(--gradient-bg);
     background-attachment: fixed;
-    width: 1200px;
-    height: 800px;
     overflow: hidden;
   }
 

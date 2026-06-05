@@ -10,7 +10,7 @@ interface NavProps {
 
 export const Nav = ({ TABS, activeId, onSelect }: NavProps) => {
 	return (
-		<header className="w-full mt-8 mb-6 flex items-center justify-center">
+		<header className="w-full my-[30px] flex items-center justify-center">
 			<nav className="
 				flex items-center gap-1 rounded-full px-2 py-1.5
 				backdrop-blur-[18px]
