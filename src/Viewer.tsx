@@ -6,7 +6,7 @@ export const Viewer = () => {
 	const [activeTab, setActiveTab] = useState(AMBIENTES[0].id)
 
 	return (
-		<div className="flex flex-col h-dvh overflow-hidden justify-center">
+		<div className="flex flex-col h-dvh overflow-hidden">
 			<Nav
 				TABS={AMBIENTES}
 				activeId={activeTab}

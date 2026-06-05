@@ -2,17 +2,11 @@ import { memo } from 'react'
 import { clsx } from 'clsx'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
-import type { Fila, SensorMock } from '../mock-data/sensores.mock'
+import type { SensorMock } from '../mock-data/sensores.mock'
 
 type DataButtonProps = Omit<SensorMock, 'posicion' | 'columna'> & {
   unidad: string
   onToggle: () => void
-}
-
-function sensorLabel(id: string, fila: Fila): string {
-  if (id === 'A01') return 'AMBIENTE'
-  if (id === 'A02') return 'RETORNO'
-  return `${id} · ${fila.substring(0, 3).toUpperCase()}`
 }
 
 function isInNormalRange(value: number) {
@@ -38,50 +32,57 @@ export const DataButton = memo(({
       type="button"
       onClick={handleOnToggle}
       className={clsx(
-        'relative w-[80px] items-center rounded-md border',
-        'flex flex-col justify-center py-2 px-2 gap-0.5',
+        'items-center rounded-md border lg:whitespace-nowrap sm:w-15 lg:w-20 xl:w-22 2xl:w-25',
+        'flex flex-col py-2 px-2 gap-0.5',
         'select-none outline-none transition-colors duration-150 active:scale-95',
         isActive
           ? 'border-green-500/40 bg-[var(--color-deep)]'
           : 'border-white/10 bg-[#798295]',
       )}
     >
-      {isActive && (
-        <FiberManualRecordIcon
-          className={clsx(
-            'absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 text-green-400 animate-pulse'
+      <span className='flex items-start'>
+        {isActive && (
+          <FiberManualRecordIcon
+            className="text-green-400 animate-pulse"
+            style={{ fontSize: '10px' }}
+          />
+        )
+        }
+        <p className={clsx(
+          'text-xxs sm:text-[0.5rem] lg:text-[0.65rem] align-baseline leading-none font-semibold mb-1',
+          isActive ? 'text-[#7ab8e8]' : 'text-[#c7c7c7]'
+        )}>
+          {id === 'A01' ? 'AMBIENTE' : id === 'A02' ? 'RETORNO' : (
+            <>
+              {id}
+              <span className="hidden short:hidden lg:inline"> · {fila.substring(0, 3).toUpperCase()}</span>
+            </>
           )}
-          style={{ fontSize: 12 }}
-        />)
-      }
-
-      <p className={clsx(
-        'text-[0.6rem] leading-none font-semibold mb-1',
-        isActive ? 'text-[#7ab8e8]' : 'text-[#c7c7c7]'
-      )}>
-        {sensorLabel(id, fila)}
-      </p>
+        </p>
+      </span>
 
       {isInNormalRange(valor) ? (
         <div className="flex items-baseline gap-[2px]">
           <span className={clsx(
-            'text-lg font-bold tabular-nums leading-none',
+            'text-sm lg:text-card-large 2xl:text-xl font-bold tabular-nums leading-none',
             habilitado ? 'text-white' : 'text-[#c7c7c7]'
           )}>
-            {typeof valor === 'number' ? valor.toFixed(1) : '---'}
+            {valor.toFixed(1)}
           </span>
           <span className={clsx(
-            'text-[0.6rem] font-semibold leading-none',
+            'text-xxs lg:text-xs font-semibold leading-none',
             habilitado ? 'text-[#7ab8e8]' : 'text-[#c7c7c7]'
           )}>
             {unidad}
           </span>
         </div>
       ) : (
-        <ElectricalServicesIcon
-          className='text-[#c7c7c7]'
-          style={{ fontSize: 20 }}
-        />
+        <span className="text-sm lg:text-card-large 2xl:text-xl leading-none">
+          <ElectricalServicesIcon
+            className='text-[#c7c7c7]'
+            style={{ fontSize: '1em' }}
+          />
+        </span>
       )}
     </button>
   )
