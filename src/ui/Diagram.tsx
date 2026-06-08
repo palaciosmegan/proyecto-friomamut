@@ -1,11 +1,12 @@
 import { useState, useCallback, useEffect, useRef, memo } from 'react'
-import { MOCK_SENSORES, type SensorMock } from '../mock-data/sensores.mock'
+import type { SensorMock } from '../mock-data/sensores.mock'
 import { DataButton } from './DataButton'
 import { Message } from './Message'
 
 interface DiagramProps {
 	image: string
 	ambienteId: number
+	isActive: boolean
 }
 
 // Aspect ratio bounds for the diagram image (width:height)
@@ -80,19 +81,32 @@ const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
 			id={sensor.id}
 			unidad="°C"
 			habilitado={sensor.habilitado === true}
-			fila={sensor.fila}
+			orientation={sensor.orientation}
 			onToggle={handleClick} />
 	)
 })
 
 SensorPin.displayName = 'SensorPin'
 
-export const Diagram = memo(({ image, ambienteId }: DiagramProps) => {
-	const [sensores, setSensores] = useState<SensorMock[]>(
-		() => MOCK_SENSORES[ambienteId] ?? []
-	)
+export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
+	const [sensores, setSensores] = useState<SensorMock[]>([])
+	const [loaded, setLoaded] = useState(false)
 	const imgRef = useRef<HTMLImageElement>(null)
 	const [imgHeight, setImgHeight] = useState<number | undefined>()
+
+	useEffect(() => {
+		const fetchSensores = () =>
+			fetch(`/lectura/estructura/${ambienteId}`)
+				.then(r => r.json())
+				.then((data: SensorMock[]) => setSensores(data))
+				.catch(() => {})
+				.finally(() => setLoaded(true))
+
+		fetchSensores()
+		if (!isActive) return
+		const interval = setInterval(fetchSensores, 10_000)
+		return () => clearInterval(interval)
+	}, [ambienteId, isActive])
 
 	useEffect(() => {
 		const img = imgRef.current
@@ -118,7 +132,7 @@ export const Diagram = memo(({ image, ambienteId }: DiagramProps) => {
 				style={{ minHeight: MIN_HEIGHT_VW }}
 			/>
 
-			{sensores.length === 0 ? (
+			{loaded && sensores.length === 0 ? (
 				<Message />
 			) : (
 				<div className="absolute inset-x-0 top-0" style={{ height: imgHeight ?? '100%' }}>
@@ -142,7 +156,7 @@ export const Diagram = memo(({ image, ambienteId }: DiagramProps) => {
 							{ label: 'EXT', row: 6 },
 						].map(({ label, row }, i) => (
 							<div
-								key={`fila-label-${i}`}
+								key={`orientation-label-${i}`}
 								className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
 								style={{ gridRow: row, gridColumn: 1, alignSelf: 'center', justifySelf: 'end', marginRight: '0.35rem' }}
 							>

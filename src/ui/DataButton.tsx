@@ -4,7 +4,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
 import type { SensorMock } from '../mock-data/sensores.mock'
 
-type DataButtonProps = Omit<SensorMock, 'posicion' | 'columna'> & {
+type DataButtonProps = Omit<SensorMock, 'posicion'> & {
   unidad: string
   onToggle: () => void
 }
@@ -15,47 +15,39 @@ function isInNormalRange(value: number) {
 }
 
 export const DataButton = memo(({
-  id, valor, habilitado, fila, unidad, onToggle,
+  id, valor, habilitado, orientation, unidad, onToggle,
 }: DataButtonProps) => {
-  const handleOnToggle = () => {
-    if (isInNormalRange(valor)) {
-      onToggle()
-    } else {
-      console.log('no se puede activar porque se encuentra fuera de rango')
-    }
-  }
-
-  const isActive = habilitado && isInNormalRange(valor)
+  const outOfRange = habilitado && !isInNormalRange(valor) && id.substring(0, 1) !== 'A'
 
   return (
     <button
       type="button"
-      onClick={handleOnToggle}
+      onClick={onToggle}
+      style={outOfRange ? { borderColor: '#8b1e1e' } : undefined}
       className={clsx(
         'items-center rounded-md border lg:whitespace-nowrap sm:w-15 lg:w-20 xl:w-22 2xl:w-25',
         'flex flex-col py-2 px-2 gap-0.5',
         'select-none outline-none transition-colors duration-150 active:scale-95',
-        isActive
+        habilitado
           ? 'border-green-500/40 bg-[var(--color-deep)]'
           : 'border-white/10 bg-[#798295]',
       )}
     >
       <span className='flex items-start'>
-        {isActive && (
-          <FiberManualRecordIcon
-            className="text-green-400 animate-pulse"
-            style={{ fontSize: '10px' }}
-          />
-        )
-        }
+        {habilitado && isInNormalRange(valor) && (
+          <FiberManualRecordIcon className="text-green-400 animate-pulse" style={{ fontSize: '10px' }} />
+        )}
+        {outOfRange && (
+          <FiberManualRecordIcon className="text-[#8b1e1e]" style={{ fontSize: '10px' }} />
+        )}
         <p className={clsx(
           'text-xxs sm:text-[0.5rem] lg:text-[0.65rem] align-baseline leading-none font-semibold mb-1',
-          isActive ? 'text-[#7ab8e8]' : 'text-[#c7c7c7]'
+          habilitado ? 'text-[#7ab8e8]' : 'text-[#c7c7c7]'
         )}>
           {id === 'A01' ? 'AMBIENTE' : id === 'A02' ? 'RETORNO' : (
             <>
               {id}
-              <span className="hidden short:hidden lg:inline"> · {fila.substring(0, 3).toUpperCase()}</span>
+              <span className="hidden short:hidden lg:inline"> · {orientation}</span>
             </>
           )}
         </p>
