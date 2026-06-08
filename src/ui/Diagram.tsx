@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, memo } from 'react'
-import type { SensorMock } from '../mock-data/sensores.mock'
+import { MOCK_SENSORES, type SensorMock } from '../mock-data/sensores.mock'
 import { DataButton } from './DataButton'
 import { Message } from './Message'
 
@@ -52,7 +52,10 @@ const posicionesOnGridArea = {
 	31: "5/9",
 	32: "6/9",
 	101: "4/1",
-	102: "4/10"
+	102: "4/10",
+	103: "6/1",
+	104: "6/10",
+	105: "2/10"
 }
 
 function getGridPos(posicion: number) {
@@ -98,8 +101,8 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 		const fetchSensores = () =>
 			fetch(`/lectura/estructura/${ambienteId}`)
 				.then(r => r.json())
-				.then((data: SensorMock[]) => setSensores(data))
-				.catch(() => {})
+				.then((data: SensorMock[]) => setSensores(data?.length ? data : (MOCK_SENSORES[ambienteId] ?? [])))
+				.catch(() => setSensores(MOCK_SENSORES[ambienteId] ?? []))
 				.finally(() => setLoaded(true))
 
 		fetchSensores()
