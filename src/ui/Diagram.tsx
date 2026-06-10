@@ -15,47 +15,47 @@ const ASPECT_MAX_STRETCH = '125/56'
 const MIN_HEIGHT_VW = '27.2vw' // (34/125) * 100vw — 1250:340 ratio floor
 
 // Grid layout: left dead zone | 8 equal sensor columns | right dead zone
-const GRID_COLUMNS = '2.7fr repeat(8, 1fr) 3.3fr'
+const GRID_COLUMNS = '3.3fr repeat(8, 1fr) 2.7fr'
 const GRID_ROWS = 'repeat(7, 1fr)'
 
-const posicionesOnGridArea = {
-	1: "3/2",
-	2: "2/2",
-	3: "3/3",
-	4: "2/3",
-	5: "3/4",
-	6: "2/4",
-	7: "3/5",
-	8: "2/5",
-	9: "3/6",
-	10: "2/6",
-	11: "3/7",
-	12: "2/7",
-	13: "3/8",
-	14: "2/8",
-	15: "3/9",
-	16: "2/9",
-	17: "5/2",
-	18: "6/2",
-	19: "5/3",
-	20: "6/3",
-	21: "5/4",
-	22: "6/4",
-	23: "5/5",
-	24: "6/5",
-	25: "5/6",
-	26: "6/6",
-	27: "5/7",
-	28: "6/7",
-	29: "5/8",
-	30: "6/8",
-	31: "5/9",
-	32: "6/9",
-	101: "4/1",
-	102: "4/10",
-	103: "6/1",
-	104: "6/10",
-	105: "2/10"
+const posicionesOnGridArea: Record<number, string> = {
+	1: "5/9",
+	2: "6/9",
+	3: "5/8",
+	4: "6/8",
+	5: "5/7",
+	6: "6/7",
+	7: "5/6",
+	8: "6/6",
+	9: "5/5",
+	10: "6/5",
+	11: "5/4",
+	12: "6/4",
+	13: "5/3",
+	14: "6/3",
+	15: "5/2",
+	16: "6/2",
+	17: "3/9",
+	18: "2/9",
+	19: "3/8",
+	20: "2/8",
+	21: "3/7",
+	22: "2/7",
+	23: "3/6",
+	24: "2/6",
+	25: "3/5",
+	26: "2/5",
+	27: "3/4",
+	28: "2/4",
+	29: "3/3",
+	30: "2/3",
+	31: "3/2",
+	32: "2/2",
+	101: "4/10",
+	102: "4/1",
+	103: "2/10",
+	104: "2/1",
+	105: "6/1",
 }
 
 function getGridPos(posicion: number) {
@@ -66,7 +66,7 @@ function getGridPos(posicion: number) {
 	return {
 		gridRow: row,
 		gridColumn: col,
-		alignSelf: posicion > 100 ? 'center' : alignTop ? 'start' : 'end',
+		alignSelf: posicion > 100 ? 'center' : alignTop ? 'end' : 'start',
 	}
 }
 
@@ -120,10 +120,20 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 	}, [])
 
 	const handleToggle = useCallback((sensorId: string) => {
-		setSensores(prev =>
-			prev.map(s => s.id === sensorId ? { ...s, habilitado: !s.habilitado } : s)
-		)
-	}, [])
+		setSensores(prev => {
+			const sensor = prev.find(s => s.id === sensorId)
+			if (!sensor) return prev
+			const nuevoEstado = !sensor.habilitado
+			fetch(`/lectura/habilitados/${ambienteId}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ id: sensorId, habilitado: nuevoEstado ? true : false }),
+			}).catch(() => {
+				setSensores(curr => curr.map(s => s.id === sensorId ? { ...s, habilitado: !nuevoEstado } : s))
+			})
+			return prev.map(s => s.id === sensorId ? { ...s, habilitado: nuevoEstado } : s)
+		})
+	}, [ambienteId])
 
 	return (
 		<div className="relative w-full h-full">
@@ -131,7 +141,7 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 				ref={imgRef}
 				src={image}
 				alt=""
-				className={`w-full max-h-full object-fill aspect-[${ASPECT_MAX_STRETCH}]`}
+				className={`rotate-180 w-full max-h-full object-fill aspect-[${ASPECT_MAX_STRETCH}]`}
 				style={{ minHeight: MIN_HEIGHT_VW }}
 			/>
 
@@ -161,7 +171,7 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 							<div
 								key={`orientation-label-${i}`}
 								className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
-								style={{ gridRow: row, gridColumn: 1, alignSelf: 'center', justifySelf: 'end', marginRight: '0.35rem' }}
+								style={{ gridRow: row, gridColumn: 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
 							>
 								{label}
 							</div>
