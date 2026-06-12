@@ -229,26 +229,21 @@ TunelesPanel.displayName = 'TunelesPanel'
 export function Tuneles() {
   const { ambientes, activeTab, setActiveTab, loaded } = useRootData()
 
-  const ambientesConVariante = ambientes.map((a, i) => ({
-    ...a,
-    imageVariant: i === 0 ? 'G' : 'A',
-  }))
-
   return (
     <div className="flex flex-col h-dvh overflow-hidden">
       <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
 
       <main className="flex-1 overflow-hidden pb-[30px] relative">
-        {loaded && ambientesConVariante.length === 0 ? (
+        {loaded && ambientes.length === 0 ? (
           <Message text="Sin tuneles configurados" />
-        ) : ambientesConVariante.map(ambiente => (
+        ) : ambientes.map(ambiente => (
           <div
             key={ambiente.id}
             className={`absolute inset-0 h-full${ambiente.id !== activeTab ? ' invisible' : ''}`}
           >
             <TunelesPanel
               ambiente={ambiente}
-              imageVariant={ambiente.imageVariant}
+              imageVariant={ambiente.imageVariant ?? 'A'}
             />
           </div>
         ))}
