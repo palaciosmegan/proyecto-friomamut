@@ -100,7 +100,7 @@ const GRID_CONFIG: Record<string, { columns: string; rows: string; posiciones: R
   D: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
   E: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
   F: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
-  G: { columns: '7.6rem repeat(4, 1fr) 4rem repeat(4, 1fr) 7.5rem', rows: '4.7rem 1fr 1fr 3fr 1fr 1fr 4.7rem', posiciones: G_POSICIONES },
+  G: { columns: 'repeat(5, 1fr) 4rem repeat(5, 1fr)', rows: '1.5fr 1fr 1fr 3fr 1fr 1fr 1.5fr', posiciones: G_POSICIONES },
 }
 
 function getGridPos(posicion: number, posiciones: Record<number, string>) {
@@ -213,7 +213,7 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
               <div
                 key={`orientation-label-${i}`}
                 className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
-                style={{ gridRow: row, gridColumn: 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
+                style={{ gridRow: row, gridColumn: imageVariant === 'G' ? 11 : 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
               >
                 {label}
               </div>
