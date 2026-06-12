@@ -5,6 +5,6 @@ export type Sensor = {
   posicion: number
   orientation: Orientation
   id: string
-  valor: number
+  valor: number | null
   habilitado: boolean
 }

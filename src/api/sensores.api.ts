@@ -31,15 +31,14 @@ function normalizarSensor(value: unknown): Sensor {
   }
 
   const sensor = value as SensorApi
-  const isIndicator = typeof sensor.id === 'string' && sensor.id.startsWith('A')
 
   if (
-    (!isIndicator && typeof sensor.sensorId !== 'number')
+    (typeof sensor.sensorId !== 'number' && sensor.sensorId !== null)
     || typeof sensor.id !== 'string'
     || !isOrientation(sensor.orientation)
     || typeof sensor.posicion !== 'number'
     || typeof sensor.habilitado !== 'boolean'
-    || typeof sensor.valor !== 'number'
+    || (typeof sensor.valor !== 'number' && sensor.valor !== null)
   ) {
     throw new Error(`Sensor invalido: ${JSON.stringify(value)}`)
   }
@@ -50,7 +49,7 @@ function normalizarSensor(value: unknown): Sensor {
     orientation: sensor.orientation,
     posicion: sensor.posicion,
     habilitado: sensor.habilitado,
-    valor: sensor.valor,
+    valor: typeof sensor.valor === 'number' ? sensor.valor : null,
   }
 }
 

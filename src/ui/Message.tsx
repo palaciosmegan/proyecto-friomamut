@@ -1,6 +1,10 @@
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 
-export const Message = () => {
+interface MessageProps {
+  text?: string
+}
+
+export const Message = ({ text = 'Sin sensores configurados' }: MessageProps) => {
   return (
     <div className="absolute inset-x-0 top-[30vh] flex justify-center">
       <div
@@ -12,7 +16,7 @@ export const Message = () => {
           style={{ fontSize: 16 }}
         />
         <span className="text-sm font-semibold tracking-wide text-[rgba(255,230,140,0.9)]">
-          Sin sensores configurados
+          {text}
         </span>
       </div>
     </div>

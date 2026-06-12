@@ -9,7 +9,8 @@ type DataButtonProps = Omit<Sensor, 'posicion' | 'sensorId'> & {
   onToggle: () => void
 }
 
-function isInNormalRange(value: number, id: string) {
+function isInNormalRange(value: number | null, id: string) {
+  if (value === null) return false
   if (id.substring(0, 1) === "A") return true
   else if (value < -30 || value > 30) return false
   else return true
@@ -32,8 +33,8 @@ export const DataButton = memo(({
       onClick={handleToggle}
       style={outOfRangeStyle ? { borderColor: '#8b1e1e' } : undefined}
       className={clsx(
-        'items-center rounded-md border lg:whitespace-nowrap sm:w-15 lg:w-20 xl:w-22 2xl:w-25',
-        'flex flex-col py-2 px-2 gap-0.5',
+        'items-center rounded-md border whitespace-nowrap w-17 sm:w-20 lg:w-24 xl:w-27 2xl:w-30',
+        'flex flex-col py-2.5 px-2.5 gap-1',
         'select-none outline-none transition-colors duration-150',
         habilitado
           ? 'border-green-500/40 bg-[var(--color-deep)]'
@@ -61,7 +62,7 @@ export const DataButton = memo(({
         </p>
       </span>
 
-      {isInNormalRange(valor, id) ? (
+      {valor !== null && isInNormalRange(valor, id) ? (
         <div className="flex items-baseline gap-[2px]">
           <span className={clsx(
             'text-sm lg:text-card-large 2xl:text-xl font-bold tabular-nums leading-none',

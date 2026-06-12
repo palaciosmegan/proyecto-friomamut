@@ -1,25 +1,27 @@
 import { useEffect, useState } from 'react'
 import { obtenerAmbientes } from './api/ambientes.api'
 import _imagenes from './assets/imagenes_ambientes.json'
-import { AMBIENTES } from './config/ambientes.config'
+import type { Ambiente } from './config/ambientes.config'
 import { Diagram } from './ui/Diagram'
+import { Message } from './ui/Message'
 import { Nav } from './ui/Nav'
 
 type ImagenAmbiente = { nombre: string; variante: string; imagen: string }
 const imagenes = _imagenes as ImagenAmbiente[]
 
 export const Viewer = () => {
-	const [ambientes, setAmbientes] = useState(AMBIENTES)
-	const [activeTab, setActiveTab] = useState(AMBIENTES[0].id)
+	const [ambientes, setAmbientes] = useState<Ambiente[]>([])
+	const [activeTab, setActiveTab] = useState<number | null>(null)
+	const [loaded, setLoaded] = useState(false)
 
 	useEffect(() => {
 		obtenerAmbientes()
 			.then(data => {
-				if (data.length === 0) return
-
 				setAmbientes(data)
 				setActiveTab(current =>
-					data.some(ambiente => ambiente.id === current) ? current : data[0].id
+					current !== null && data.some(ambiente => ambiente.id === current)
+						? current
+						: (data[0]?.id ?? null)
 				)
 			})
 			.catch(error => {
@@ -27,8 +29,8 @@ export const Viewer = () => {
 				if (error instanceof Error && error.cause) {
 					console.error('[API tuneles] Causa original:', error.cause)
 				}
-				console.info('[API tuneles] Se usaran los tuneles locales:', AMBIENTES)
 			})
+			.finally(() => setLoaded(true))
 	}, [])
 
 	return (
@@ -40,7 +42,9 @@ export const Viewer = () => {
 			/>
 
 			<main className="flex-1 overflow-hidden pb-[30px] relative">
-				{ambientes.map(ambiente => (
+				{loaded && ambientes.length === 0 ? (
+					<Message text="Sin tuneles configurados" />
+				) : ambientes.map(ambiente => (
 					<div
 						key={ambiente.id}
 						className={`absolute inset-0 h-full${ambiente.id !== activeTab ? ' invisible' : ''}`}

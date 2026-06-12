@@ -76,6 +76,12 @@ interface SensorPinProps {
 	onToggle: (id: string) => void
 }
 
+function getUnidad(sensorId: string) {
+	if (sensorId === 'A03' || sensorId === 'A04') return 'mmca'
+	if (sensorId === 'A05') return 'm³/h'
+	return '°C'
+}
+
 const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
 	const handleClick = useCallback(() => onToggle(sensor.id), [sensor.id, onToggle])
 
@@ -83,7 +89,7 @@ const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
 		<DataButton
 			valor={sensor.valor}
 			id={sensor.id}
-			unidad="°C"
+			unidad={getUnidad(sensor.id)}
 			habilitado={sensor.habilitado === true}
 			orientation={sensor.orientation}
 			onToggle={handleClick} />
@@ -180,7 +186,7 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 						].map(({ label, row }, i) => (
 							<div
 								key={`orientation-label-${i}`}
-								className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
+								className="text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
 								style={{ gridRow: row, gridColumn: 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
 							>
 								{label}
