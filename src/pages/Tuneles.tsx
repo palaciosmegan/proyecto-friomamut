@@ -130,7 +130,7 @@ const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
   const handleClick = useCallback(() => onToggle(sensor.id), [sensor.id, onToggle])
   return (
     <DataButton
-      valor={sensor.posicion}
+      valor={sensor.valor}
       id={sensor.id}
       unidad={getUnidad(sensor.id)}
       habilitado={sensor.habilitado === true}
