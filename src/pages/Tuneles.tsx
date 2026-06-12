@@ -11,8 +11,7 @@ import _imagenes from '../assets/imagenes_ambientes.json'
 type ImagenAmbiente = { nombre: string; variante: string; imagen: string }
 const imagenes = _imagenes as ImagenAmbiente[]
 
-const ASPECT_MAX_STRETCH = '125/56'
-const MIN_HEIGHT_VW = '27.2vw'
+const MIN_HEIGHT_VW = '43vw'
 const GRID_COLUMNS = '3.3fr repeat(8, 1fr) 2.7fr'
 const GRID_ROWS = 'repeat(7, 1fr)'
 
@@ -106,7 +105,7 @@ const TunelesPanel = memo(({ ambiente, image }: TunelesPanelProps) => {
         ref={imgRef}
         src={image}
         alt=""
-        className={`rotate-180 w-full max-h-full object-fill aspect-[${ASPECT_MAX_STRETCH}]`}
+        className={`rotate-180 w-full max-h-full object-fill`}
         style={{ minHeight: MIN_HEIGHT_VW }}
       />
 

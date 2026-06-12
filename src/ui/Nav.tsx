@@ -15,7 +15,7 @@ export const Nav = ({ TABS, activeId, onSelect }: NavProps) => {
 	return (
 		<header className="w-full my-[30px]">
 			<nav className="grid grid-flow-col grid-cols-[1fr_auto_1fr] items-center">
-				<div className="ml-8 relative w-fit">
+				<div className="sm:ml-4 md:ml-6 lg:ml-8 relative w-fit">
 					<select
 						className="btn btn-primary appearance-none pr-8 cursor-pointer"
 						value={pathname}
