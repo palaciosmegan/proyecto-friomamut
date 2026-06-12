@@ -1,11 +1,7 @@
 import type { Ambiente } from '../config/ambientes.config'
+import { getApiUrl } from './api.config'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 const TUNELES_ENDPOINT = '/api/tuneles'
-
-function getApiUrl(endpoint: string) {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`
-}
 
 function isAmbiente(value: unknown): value is Ambiente {
   if (typeof value !== 'object' || value === null) return false
@@ -15,10 +11,6 @@ function isAmbiente(value: unknown): value is Ambiente {
 }
 
 export async function obtenerAmbientes(): Promise<Ambiente[]> {
-  if (!API_BASE_URL) {
-    throw new Error('Falta configurar VITE_API_BASE_URL')
-  }
-
   const url = getApiUrl(TUNELES_ENDPOINT)
 
   console.info('[API tuneles] Consultando:', url)

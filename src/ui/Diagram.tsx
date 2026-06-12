@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef, memo } from 'react'
 import { MOCK_SENSORES, type SensorMock } from '../mock-data/sensores.mock'
+import { getApiUrl } from '../api/api.config'
 import { DataButton } from './DataButton'
 import { Message } from './Message'
 
@@ -98,12 +99,26 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 	const [imgHeight, setImgHeight] = useState<number | undefined>()
 
 	useEffect(() => {
-		const fetchSensores = () =>
-			fetch(`/lectura/estructura/${ambienteId}`)
-				.then(r => r.json())
-				.then((data: SensorMock[]) => setSensores(data?.length ? data : (MOCK_SENSORES[ambienteId] ?? [])))
-				.catch(() => setSensores(MOCK_SENSORES[ambienteId] ?? []))
+		const fetchSensores = () => {
+			const url = getApiUrl(`/lectura/estructura/${ambienteId}`)
+
+			return fetch(url)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP ${response.status} ${response.statusText}`)
+					}
+					return response.json()
+				})
+				.then((data: SensorMock[]) => {
+					console.info(`[API sensores] Respuesta recibida para tunel ${ambienteId}:`, data)
+					setSensores(data?.length ? data : (MOCK_SENSORES[ambienteId] ?? []))
+				})
+				.catch(error => {
+					console.error(`[API sensores] Fallo al consultar ${url}:`, error)
+					setSensores(MOCK_SENSORES[ambienteId] ?? [])
+				})
 				.finally(() => setLoaded(true))
+		}
 
 		fetchSensores()
 		if (!isActive) return
@@ -124,11 +139,18 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 			const sensor = prev.find(s => s.id === sensorId)
 			if (!sensor) return prev
 			const nuevoEstado = !sensor.habilitado
-			fetch(`/lectura/habilitados/${ambienteId}`, {
+			const url = getApiUrl(`/lectura/habilitados/${ambienteId}`)
+
+			fetch(url, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ id: sensorId, habilitado: nuevoEstado ? true : false }),
-			}).catch(() => {
+			}).then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP ${response.status} ${response.statusText}`)
+				}
+			}).catch(error => {
+				console.error(`[API sensores] Fallo al actualizar ${url}:`, error)
 				setSensores(curr => curr.map(s => s.id === sensorId ? { ...s, habilitado: !nuevoEstado } : s))
 			})
 			return prev.map(s => s.id === sensorId ? { ...s, habilitado: nuevoEstado } : s)
