@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { obtenerAmbientes } from './api/ambientes.api'
 import _imagenes from './assets/imagenes_ambientes.json'
 import type { Ambiente } from './config/ambientes.config'
-import { Diagram } from './ui/Diagram'
+//import { Diagram } from './ui/Diagram'
 import { Message } from './ui/Message'
 import { Nav } from './ui/Nav'
 
