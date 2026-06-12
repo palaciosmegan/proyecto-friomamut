@@ -79,7 +79,7 @@ export async function actualizarSensorActivo(
 ) {
   const url = getApiUrl(`/api/environments/${ambienteId}/active-process/sensors/active`)
   const response = await fetch(url, {
-    method: 'PATCH',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       sensors: [{ id: sensorId, active }],
