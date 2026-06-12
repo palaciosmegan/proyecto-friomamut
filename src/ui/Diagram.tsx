@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, memo } from 'react'
-import { MOCK_SENSORES, type SensorMock } from '../mock-data/sensores.mock'
-import { getApiUrl } from '../api/api.config'
+import { actualizarSensorActivo, obtenerSensores } from '../api/sensores.api'
+import type { Sensor } from '../types/sensor.types'
 import { DataButton } from './DataButton'
 import { Message } from './Message'
 
@@ -72,7 +72,7 @@ function getGridPos(posicion: number) {
 }
 
 interface SensorPinProps {
-	sensor: SensorMock
+	sensor: Sensor
 	onToggle: (id: string) => void
 }
 
@@ -93,29 +93,21 @@ const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
 SensorPin.displayName = 'SensorPin'
 
 export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
-	const [sensores, setSensores] = useState<SensorMock[]>([])
+	const [sensores, setSensores] = useState<Sensor[]>([])
 	const [loaded, setLoaded] = useState(false)
 	const imgRef = useRef<HTMLImageElement>(null)
 	const [imgHeight, setImgHeight] = useState<number | undefined>()
 
 	useEffect(() => {
 		const fetchSensores = () => {
-			const url = getApiUrl(`/lectura/estructura/${ambienteId}`)
-
-			return fetch(url)
-				.then(response => {
-					if (!response.ok) {
-						throw new Error(`HTTP ${response.status} ${response.statusText}`)
-					}
-					return response.json()
-				})
-				.then((data: SensorMock[]) => {
+			return obtenerSensores(ambienteId)
+				.then(data => {
 					console.info(`[API sensores] Respuesta recibida para tunel ${ambienteId}:`, data)
-					setSensores(data?.length ? data : (MOCK_SENSORES[ambienteId] ?? []))
+					setSensores(data)
 				})
 				.catch(error => {
-					console.error(`[API sensores] Fallo al consultar ${url}:`, error)
-					setSensores(MOCK_SENSORES[ambienteId] ?? [])
+					console.error(`[API sensores] Fallo al consultar el tunel ${ambienteId}:`, error)
+					setSensores([])
 				})
 				.finally(() => setLoaded(true))
 		}
@@ -138,19 +130,15 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 		setSensores(prev => {
 			const sensor = prev.find(s => s.id === sensorId)
 			if (!sensor) return prev
-			const nuevoEstado = !sensor.habilitado
-			const url = getApiUrl(`/lectura/habilitados/${ambienteId}`)
+			if (sensor.sensorId === undefined) {
+				console.error(`[API sensores] ${sensor.id} no tiene sensorId real y no puede actualizarse`)
+				return prev
+			}
 
-			fetch(url, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ id: sensorId, habilitado: nuevoEstado ? true : false }),
-			}).then(response => {
-				if (!response.ok) {
-					throw new Error(`HTTP ${response.status} ${response.statusText}`)
-				}
-			}).catch(error => {
-				console.error(`[API sensores] Fallo al actualizar ${url}:`, error)
+			const nuevoEstado = !sensor.habilitado
+
+			actualizarSensorActivo(ambienteId, sensor.sensorId, nuevoEstado).catch(error => {
+				console.error(`[API sensores] Fallo al actualizar ${sensor.id}:`, error)
 				setSensores(curr => curr.map(s => s.id === sensorId ? { ...s, habilitado: !nuevoEstado } : s))
 			})
 			return prev.map(s => s.id === sensorId ? { ...s, habilitado: nuevoEstado } : s)

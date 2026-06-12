@@ -2,9 +2,9 @@ import { memo } from 'react'
 import { clsx } from 'clsx'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
-import type { SensorMock } from '../mock-data/sensores.mock'
+import type { Sensor } from '../types/sensor.types'
 
-type DataButtonProps = Omit<SensorMock, 'posicion'> & {
+type DataButtonProps = Omit<Sensor, 'posicion' | 'sensorId'> & {
   unidad: string
   onToggle: () => void
 }
