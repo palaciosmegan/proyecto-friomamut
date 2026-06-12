@@ -33,13 +33,13 @@ export const DataButton = memo(({
       onClick={handleToggle}
       style={outOfRangeStyle ? { borderColor: '#8b1e1e' } : undefined}
       className={clsx(
-        'items-center rounded-md border whitespace-nowrap w-17 sm:w-20 lg:w-24 xl:w-27 2xl:w-30',
-        'flex flex-col py-2.5 px-2.5 gap-1',
+        'items-center rounded-md border lg:whitespace-nowrap sm:w-15 lg:w-20 xl:w-22 2xl:w-25',
+        'flex flex-col py-2 px-2 gap-0.5',
         'select-none outline-none transition-colors duration-150',
         habilitado
           ? 'border-green-500/40 bg-[var(--color-deep)]'
           : 'border-white/10 bg-[#798295]',
-        id.substring(0, 1) === "A" ? '' : 'active:scale-95'
+        id.substring(0, 1) === "A" ? 'w-17 sm:w-20 lg:w-24 xl:w-27 2xl:w-30 py-2.5 px-2.5 gap-1' : 'active:scale-95'
       )}
     >
       <span className='flex items-start'>

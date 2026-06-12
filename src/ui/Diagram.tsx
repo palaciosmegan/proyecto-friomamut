@@ -186,7 +186,7 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 						].map(({ label, row }, i) => (
 							<div
 								key={`orientation-label-${i}`}
-								className="text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
+								className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
 								style={{ gridRow: row, gridColumn: 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
 							>
 								{label}
