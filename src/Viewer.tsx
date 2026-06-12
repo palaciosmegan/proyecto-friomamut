@@ -39,13 +39,17 @@ export const Viewer = () => {
 				onSelect={setActiveTab}
 			/>
 
-			<main className="flex-1 overflow-hidden pb-[30px]">
+			<main className="flex-1 overflow-hidden pb-[30px] relative">
 				{ambientes.map(ambiente => (
 					<div
 						key={ambiente.id}
-						className={ambiente.id === activeTab ? 'h-full' : 'hidden'}
+						className={`absolute inset-0 h-full${ambiente.id !== activeTab ? ' invisible' : ''}`}
 					>
-						<Diagram ambienteId={ambiente.id} image={imagenes[0].imagen} />
+						<Diagram
+							ambienteId={ambiente.id}
+							image={ambiente.image ?? imagenes[0].imagen}
+							isActive={ambiente.id === activeTab}
+						/>
 					</div>
 				))}
 			</main>
