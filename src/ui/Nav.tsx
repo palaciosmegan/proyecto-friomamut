@@ -4,7 +4,7 @@ import type { Ambiente } from "../config/ambientes.config";
 
 interface NavProps {
 	TABS: Ambiente[];
-	activeId: number;
+	activeId: number | null;
 	onSelect: (id: number) => void;
 }
 

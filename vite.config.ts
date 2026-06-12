@@ -12,9 +12,4 @@ export default defineConfig({
     viteSingleFile(),
     babel({ presets: [reactCompilerPreset()] })
   ],
-  server: {
-    proxy: {
-      '/lectura': 'http://localhost:1880',
-    },
-  },
 })

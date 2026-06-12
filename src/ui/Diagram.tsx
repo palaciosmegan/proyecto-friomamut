@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef, memo } from 'react'
-import { MOCK_SENSORES, type SensorMock } from '../mock-data/sensores.mock'
+import { actualizarSensorActivo, obtenerSensores } from '../api/sensores.api'
+import type { Sensor } from '../types/sensor.types'
 import { DataButton } from './DataButton'
 import { Message } from './Message'
 
@@ -71,8 +72,14 @@ function getGridPos(posicion: number) {
 }
 
 interface SensorPinProps {
-	sensor: SensorMock
+	sensor: Sensor
 	onToggle: (id: string) => void
+}
+
+function getUnidad(sensorId: string) {
+	if (sensorId === 'A03' || sensorId === 'A04') return 'mmca'
+	if (sensorId === 'A05') return 'm³/h'
+	return '°C'
 }
 
 const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
@@ -82,7 +89,7 @@ const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
 		<DataButton
 			valor={sensor.valor}
 			id={sensor.id}
-			unidad="°C"
+			unidad={getUnidad(sensor.id)}
 			habilitado={sensor.habilitado === true}
 			orientation={sensor.orientation}
 			onToggle={handleClick} />
@@ -92,18 +99,24 @@ const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
 SensorPin.displayName = 'SensorPin'
 
 export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
-	const [sensores, setSensores] = useState<SensorMock[]>([])
+	const [sensores, setSensores] = useState<Sensor[]>([])
 	const [loaded, setLoaded] = useState(false)
 	const imgRef = useRef<HTMLImageElement>(null)
 	const [imgHeight, setImgHeight] = useState<number | undefined>()
 
 	useEffect(() => {
-		const fetchSensores = () =>
-			fetch(`/lectura/estructura/${ambienteId}`)
-				.then(r => r.json())
-				.then((data: SensorMock[]) => setSensores(data?.length ? data : (MOCK_SENSORES[ambienteId] ?? [])))
-				.catch(() => setSensores(MOCK_SENSORES[ambienteId] ?? []))
+		const fetchSensores = () => {
+			return obtenerSensores(ambienteId)
+				.then(data => {
+					console.info(`[API sensores] Respuesta recibida para tunel ${ambienteId}:`, data)
+					setSensores(data)
+				})
+				.catch(error => {
+					console.error(`[API sensores] Fallo al consultar el tunel ${ambienteId}:`, error)
+					setSensores([])
+				})
 				.finally(() => setLoaded(true))
+		}
 
 		fetchSensores()
 		if (!isActive) return
@@ -123,12 +136,15 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 		setSensores(prev => {
 			const sensor = prev.find(s => s.id === sensorId)
 			if (!sensor) return prev
+			if (sensor.sensorId === undefined) {
+				console.error(`[API sensores] ${sensor.id} no tiene sensorId real y no puede actualizarse`)
+				return prev
+			}
+
 			const nuevoEstado = !sensor.habilitado
-			fetch(`/lectura/habilitados/${ambienteId}`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ id: sensorId, habilitado: nuevoEstado ? true : false }),
-			}).catch(() => {
+
+			actualizarSensorActivo(ambienteId, sensor.sensorId, nuevoEstado).catch(error => {
+				console.error(`[API sensores] Fallo al actualizar ${sensor.id}:`, error)
 				setSensores(curr => curr.map(s => s.id === sensorId ? { ...s, habilitado: !nuevoEstado } : s))
 			})
 			return prev.map(s => s.id === sensorId ? { ...s, habilitado: nuevoEstado } : s)
@@ -170,7 +186,7 @@ export const Diagram = memo(({ image, ambienteId, isActive }: DiagramProps) => {
 						].map(({ label, row }, i) => (
 							<div
 								key={`orientation-label-${i}`}
-								className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
+								className="text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
 								style={{ gridRow: row, gridColumn: 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
 							>
 								{label}
