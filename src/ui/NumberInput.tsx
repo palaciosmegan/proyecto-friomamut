@@ -34,6 +34,7 @@ export const NumberInput = ({ sensorId, correction, unidad, /* onCorrectionChang
           step="0.1"
           placeholder={correction || "0.0"}
           value={number}
+          readOnly
           // onChange={e => onCorrectionChange(sensor.id, e.target.value)}
           // onChange={onCorrectionChange}
           className="w-11 text-center bg-transparent outline-none text-sm font-mono text-[var(--color-text-primary)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-[var(--color-text-secondary)]"
