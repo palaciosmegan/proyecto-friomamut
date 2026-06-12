@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 import { RootDataProvider } from './RootDataProvider'
 import { Calibradores } from './pages/Calibradores'
 import { Tuneles } from './pages/Tuneles'
@@ -6,7 +6,7 @@ import { Balizas } from './pages/Balizas'
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <RootDataProvider>
         <Routes>
           <Route path="/" element={<Tuneles />} />
@@ -14,7 +14,7 @@ function App() {
           <Route path="/balizas" element={<Balizas />} />
         </Routes>
       </RootDataProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
