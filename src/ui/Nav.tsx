@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { clsx } from "clsx";
 import type { Ambiente } from "../config/ambientes.config";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface NavProps {
 	TABS: Ambiente[];
@@ -10,17 +10,28 @@ interface NavProps {
 }
 
 export const Nav = ({ TABS, activeId, onSelect }: NavProps) => {
-	const {pathname} = useLocation()
+	const { pathname } = useLocation()
+	const navigate = useNavigate()
 	return (
 		<header className="w-full my-[30px]">
 			<nav className="grid grid-flow-col grid-cols-[1fr_auto_1fr] items-center">
-				{
-					pathname === '/' ? (
-						<Link to='/calibradores' className="ml-4 md:ml-8 lg:ml-10 btn btn-primary w-fit">Ir a calibradores</Link>
-					) : (
-						<Link to='/' className="ml-8 btn btn-primary w-fit">Ir a túneles</Link>
-					)
-				}
+				<div className="ml-8 relative w-fit">
+					<select
+						className="btn btn-primary appearance-none pr-8 cursor-pointer"
+						value={pathname}
+						onChange={(e) => navigate(e.target.value)}
+					>
+						<option value='/'>Túneles</option>
+						<option value='/calibradores'>Calibradores</option>
+						<option value='/balizas'>Balizas</option>
+					</select>
+					<svg
+						className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+						xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+					>
+						<path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+					</svg>
+				</div>
 				<div className="
 					flex items-center gap-1 rounded-full px-2 py-1.5
 					backdrop-blur-[18px]
