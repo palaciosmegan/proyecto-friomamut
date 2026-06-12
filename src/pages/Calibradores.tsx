@@ -10,7 +10,7 @@ export function Calibradores() {
 	const refs = useRef<Record<number, CalibradorHandle | null>>({})
 
   return (
-    <div className="flex flex-col h-dvh overflow-hidden">
+    <div className="flex flex-col h-dvh">
       <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
 
 			<main className="flex-1 pb-[30px] relative">

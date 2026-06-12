@@ -1,6 +1,7 @@
 import { memo } from "react"
 import { Toggle } from "./Toggle"
 import type { Sensor } from "../types/sensor.types"
+import { NumberInput } from "./NumberInput"
 
 interface SensorRowProps {
   sensor: Sensor
@@ -23,23 +24,23 @@ const getDisplayName = (sensor: Sensor) => {
 }
 
 export const SensorRow = memo(({ sensor, correction, savedCorrection, enabled, onCorrectionChange, onEnabledChange, unidad }: SensorRowProps) => {
-  const handleDecrement = () =>
-    onCorrectionChange(sensor.id, ((parseFloat(correction) || 0) - 0.1).toFixed(1))
+  // const handleDecrement = () =>
+  //   onCorrectionChange(sensor.id, ((parseFloat(correction) || 0) - 0.1).toFixed(1))
 
-  const handleIncrement = () =>
-    onCorrectionChange(sensor.id, ((parseFloat(correction) || 0) + 0.1).toFixed(1))
+  // const handleIncrement = () =>
+  //   onCorrectionChange(sensor.id, ((parseFloat(correction) || 0) + 0.1).toFixed(1))
   return (
     <tr className="border-b border-[var(--color-border-subtle)] transition-colors hover:bg-[rgba(33,150,243,0.04)]">
       <td className="px-3">
         <Toggle keepTurnedOn={sensor.posicion === 101} checked={enabled} onChange={() => onEnabledChange(sensor.id)} />
       </td>
-      <td className="py-2 px-3 text-sm tracking-wider text-[var(--color-text-secondary)]">
+      <td className="w-40 py-2 px-3 text-sm tracking-wider text-[var(--color-text-secondary)]">
         <label htmlFor='correction'>
           {getDisplayName(sensor)}
         </label>
       </td>
       <td className="flex py-2 px-3 gap-2">
-        <button type="button"
+        {/* <button type="button"
           className="items-center gap-0 bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-2 py-1 transition-all focus-within:shadow-[0_0_0_3px_rgba(33,150,243,0.25),var(--glow-blue)]"
           onClick={handleDecrement}>
           -
@@ -61,7 +62,10 @@ export const SensorRow = memo(({ sensor, correction, savedCorrection, enabled, o
           className="items-center gap-0 bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-2 py-1 transition-all focus-within:shadow-[0_0_0_3px_rgba(33,150,243,0.25),var(--glow-blue)]"
           onClick={handleIncrement}>
           +
-        </button>
+        </button> */}
+        <NumberInput sensorId={sensor.id}
+          correction={correction}
+          unidad={unidad} />
       </td>
       <td className="py-2 px-3 text-sm font-mono text-[var(--color-text-primary)] tabular-nums">
         {sensor.valor && (sensor.valor + (parseFloat(correction) || 0)).toFixed(1)} {unidad}
