@@ -218,7 +218,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    overflow: hidden;
   }
 
   body {
@@ -231,7 +230,6 @@
     background-color: var(--color-abyss);
     background-image: var(--gradient-bg);
     background-attachment: fixed;
-    overflow: hidden;
   }
 
   /* Noise texture */
@@ -853,7 +851,6 @@
     color: rgb(107 114 128);
   } /* text-muted approx */
 }
-
 
 @media (max-width: 768px) {
   :root {

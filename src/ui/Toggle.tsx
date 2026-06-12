@@ -17,7 +17,7 @@ export const Toggle = ({ checked, onChange, keepTurnedOn }: ToggleProps) => {
       className={clsx(
         'relative w-10 h-6 rounded-full outline-none transition-all duration-300 ',
         'focus-visible:ring-2 focus-visible:ring-[var(--color-teal-glow)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-abyss)]',
-        checked ? 'bg-gray-300 ' : 'bg-gray-800'
+        checked ? 'bg-gray-300' : 'bg-gray-800'
       )}
     >
       <span className={clsx(

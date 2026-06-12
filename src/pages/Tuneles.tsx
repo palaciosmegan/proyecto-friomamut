@@ -12,21 +12,99 @@ type ImagenAmbiente = { nombre: string; variante: string; imagen: string }
 const imagenes = _imagenes as ImagenAmbiente[]
 
 const MIN_HEIGHT_VW = '43vw'
-const GRID_COLUMNS = '3.3fr repeat(8, 1fr) 2.7fr'
-const GRID_ROWS = 'repeat(7, 1fr)'
 
-const posicionesOnGridArea: Record<number, string> = {
-  1: "5/9", 2: "6/9", 3: "5/8", 4: "6/8", 5: "5/7", 6: "6/7",
-  7: "5/6", 8: "6/6", 9: "5/5", 10: "6/5", 11: "5/4", 12: "6/4",
-  13: "5/3", 14: "6/3", 15: "5/2", 16: "6/2",
-  17: "3/9", 18: "2/9", 19: "3/8", 20: "2/8", 21: "3/7", 22: "2/7",
-  23: "3/6", 24: "2/6", 25: "3/5", 26: "2/5", 27: "3/4", 28: "2/4",
-  29: "3/3", 30: "2/3", 31: "3/2", 32: "2/2",
-  101: "4/10", 102: "4/1", 103: "2/10", 104: "2/1", 105: "6/1",
+const DEFAULT_POSICIONES: Record<number, string> = {
+  1: "5/9",
+  2: "6/9",
+  3: "5/8",
+  4: "6/8",
+  5: "5/7",
+  6: "6/7",
+  7: "5/6",
+  8: "6/6",
+  9: "5/5",
+  10: "6/5",
+  11: "5/4",
+  12: "6/4",
+  13: "5/3",
+  14: "6/3",
+  15: "5/2",
+  16: "6/2",
+  17: "3/9",
+  18: "2/9",
+  19: "3/8",
+  20: "2/8",
+  21: "3/7",
+  22: "2/7",
+  23: "3/6",
+  24: "2/6",
+  25: "3/5",
+  26: "2/5",
+  27: "3/4",
+  28: "2/4",
+  29: "3/3",
+  30: "2/3",
+  31: "3/2",
+  32: "2/2",
+  101: "4/10",
+  102: "4/1",
+  103: "2/10",
+  104: "2/1",
+  105: "6/1",
+};
+
+const G_POSICIONES: Record<number, string> = {
+  1: "5/9",
+  2: "6/9",
+  3: "5/8",
+  4: "6/8",
+  5: "5/7",
+  6: "6/7",
+  7: "5/6",
+  8: "6/6",
+  9: "5/5",
+  10: "6/5",
+  11: "5/4",
+  12: "6/4",
+  13: "5/3",
+  14: "6/3",
+  15: "5/2",
+  16: "6/2",
+  17: "3/9",
+  18: "2/9",
+  19: "3/8",
+  20: "2/8",
+  21: "3/7",
+  22: "2/7",
+  23: "3/6",
+  24: "2/6",
+  25: "3/5",
+  26: "2/5",
+  27: "3/4",
+  28: "2/4",
+  29: "3/3",
+  30: "2/3",
+  31: "3/2",
+  32: "2/2",
+  101: "4/10",
+  102: "4/2",
+  103: "4/4",
+  104: "4/8",
+  105: "4/6",
+};
+
+const GRID_CONFIG: Record<string, { columns: string; rows: string; posiciones: Record<number, string> }> = {
+  A: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
+  B: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
+  C: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
+  D: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
+  E: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
+  F: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
+  G: { columns: '7.6rem repeat(4, 1fr) 4rem repeat(4, 1fr) 7.5rem', rows: '4.7rem 1fr 1fr 3fr 1fr 1fr 4.7rem', posiciones: G_POSICIONES },
 }
 
-function getGridPos(posicion: number) {
-  const area = posicionesOnGridArea[posicion]
+function getGridPos(posicion: number, posiciones: Record<number, string>) {
+  const area = posiciones[posicion]
   if (!area) return {}
   const [row, col] = area.split('/')
   const alignTop = (posicion <= 16 && posicion % 2 === 0) || (posicion > 16 && posicion % 2 !== 0)
@@ -52,7 +130,7 @@ const SensorPin = memo(({ sensor, onToggle }: SensorPinProps) => {
   const handleClick = useCallback(() => onToggle(sensor.id), [sensor.id, onToggle])
   return (
     <DataButton
-      valor={sensor.valor}
+      valor={sensor.posicion}
       id={sensor.id}
       unidad={getUnidad(sensor.id)}
       habilitado={sensor.habilitado === true}
@@ -65,10 +143,10 @@ SensorPin.displayName = 'SensorPin'
 
 interface TunelesPanelProps {
   ambiente: Ambiente
-  image: string
+  imageVariant: string
 }
 
-const TunelesPanel = memo(({ ambiente, image }: TunelesPanelProps) => {
+const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
   const { sensoresMap, updateSensorHabilitado } = useRootData()
   const sensores = useMemo(() => sensoresMap[ambiente.id] ?? [], [sensoresMap, ambiente.id])
   const imgRef = useRef<HTMLImageElement>(null)
@@ -103,7 +181,7 @@ const TunelesPanel = memo(({ ambiente, image }: TunelesPanelProps) => {
     <div className="relative w-full h-full">
       <img
         ref={imgRef}
-        src={image}
+        src={imagenes.find((imagen) => imagen.variante === imageVariant)?.imagen}
         alt=""
         className={`rotate-180 w-full max-h-full object-fill`}
         style={{ minHeight: MIN_HEIGHT_VW }}
@@ -115,10 +193,13 @@ const TunelesPanel = memo(({ ambiente, image }: TunelesPanelProps) => {
         <div className="absolute inset-x-0 top-0" style={{ height: imgHeight ?? '100%' }}>
           <div
             className="grid h-full place-items-center items-stretch"
-            style={{ gridTemplateRows: GRID_ROWS, gridTemplateColumns: GRID_COLUMNS }}
+            style={{
+              gridTemplateRows: GRID_CONFIG[imageVariant]?.rows,
+              gridTemplateColumns: GRID_CONFIG[imageVariant]?.columns,
+            }}
           >
             {sensores.map(s => (
-              <div key={s.id} style={getGridPos(s.posicion)}>
+              <div key={s.id} style={getGridPos(s.posicion, GRID_CONFIG[imageVariant]?.posiciones ?? DEFAULT_POSICIONES)}>
                 <SensorPin sensor={s} onToggle={handleToggle} />
               </div>
             ))}
@@ -148,21 +229,26 @@ TunelesPanel.displayName = 'TunelesPanel'
 export function Tuneles() {
   const { ambientes, activeTab, setActiveTab, loaded } = useRootData()
 
+  const ambientesConVariante = ambientes.map((a, i) => ({
+    ...a,
+    imageVariant: i === 0 ? 'G' : 'A',
+  }))
+
   return (
     <div className="flex flex-col h-dvh overflow-hidden">
       <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
 
       <main className="flex-1 overflow-hidden pb-[30px] relative">
-        {loaded && ambientes.length === 0 ? (
+        {loaded && ambientesConVariante.length === 0 ? (
           <Message text="Sin tuneles configurados" />
-        ) : ambientes.map(ambiente => (
+        ) : ambientesConVariante.map(ambiente => (
           <div
             key={ambiente.id}
             className={`absolute inset-0 h-full${ambiente.id !== activeTab ? ' invisible' : ''}`}
           >
             <TunelesPanel
               ambiente={ambiente}
-              image={ambiente.image ?? imagenes[0].imagen}
+              imageVariant={ambiente.imageVariant}
             />
           </div>
         ))}
