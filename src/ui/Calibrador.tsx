@@ -37,7 +37,6 @@ const SensorTable = ({ sensores, corrections, onCorrectionChange, onEnabledChang
 					key={s.id}
 					sensor={s}
 					correction={corrections[s.id] ?? ''}
-					savedCorrection={''}
 					enabled={s.habilitado}
 					onCorrectionChange={onCorrectionChange}
 					onEnabledChange={onEnabledChange}

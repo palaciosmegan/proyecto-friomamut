@@ -6,7 +6,6 @@ import { NumberInput } from "./NumberInput"
 interface SensorRowProps {
   sensor: Sensor
   correction: string
-  savedCorrection: string
   enabled: boolean
   onCorrectionChange: (id: string, value: string) => void
   onEnabledChange: (id: string) => void
@@ -23,12 +22,7 @@ const getDisplayName = (sensor: Sensor) => {
   return 'Sensor Ambiente'
 }
 
-export const SensorRow = memo(({ sensor, correction, savedCorrection, enabled, onCorrectionChange, onEnabledChange, unidad }: SensorRowProps) => {
-  // const handleDecrement = () =>
-  //   onCorrectionChange(sensor.id, ((parseFloat(correction) || 0) - 0.1).toFixed(1))
-
-  // const handleIncrement = () =>
-  //   onCorrectionChange(sensor.id, ((parseFloat(correction) || 0) + 0.1).toFixed(1))
+export const SensorRow = memo(({ sensor, correction, enabled, onCorrectionChange, onEnabledChange, unidad }: SensorRowProps) => {
   return (
     <tr className="border-b border-[var(--color-border-subtle)] transition-colors hover:bg-[rgba(33,150,243,0.04)]">
       <td className="px-3">
@@ -63,9 +57,12 @@ export const SensorRow = memo(({ sensor, correction, savedCorrection, enabled, o
           onClick={handleIncrement}>
           +
         </button> */}
-        <NumberInput sensorId={sensor.id}
+        <NumberInput
+          sensorId={sensor.id}
           correction={correction}
-          unidad={unidad} />
+          unidad={unidad}
+          onCorrectionChange={onCorrectionChange}
+        />
       </td>
       <td className="py-2 px-3 text-sm font-mono text-[var(--color-text-primary)] tabular-nums">
         {sensor.valor && (sensor.valor + (parseFloat(correction) || 0)).toFixed(1)} {unidad}
