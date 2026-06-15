@@ -53,10 +53,10 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
                 </td>
                 <td className="flex py-2 px-3 gap-2">
                   <NumberInput
-                    sensorId={sensor.id}
-                    correction={change.offset}
-                    unidad={unidad}
-                    onCorrectionChange={(_, val) => onOffsetChange?.(sensor.codigoLectura, parseFloat(val) || 0)}
+                    id={sensor.id}
+                    value={change.offset}
+                    unit={unidad}
+                    onChange={val => onOffsetChange?.(sensor.codigoLectura, val)}
                   />
                 </td>
                 <td className="py-2 px-3 text-sm font-mono text-[var(--color-text-primary)] tabular-nums">

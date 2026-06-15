@@ -507,6 +507,9 @@
       var(--glow-blue);
     transform: translateY(-1px);
   }
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
   .btn-secondary {
     background: transparent;
     color: var(--color-text-primary);
