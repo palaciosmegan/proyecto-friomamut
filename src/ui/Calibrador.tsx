@@ -60,14 +60,10 @@ export const Calibrador = memo(forwardRef<CalibradorHandle, CalibradorProps>(({ 
 
 	const handleEnabledChange = useCallback((sensorId: string) => {
 		const sensor = sensores.find(s => s.id === sensorId)
-		if (!sensor) return
-		if (sensor.sensorId === undefined) {
-			console.error(`[API sensores] ${sensor.id} no tiene sensorId real y no puede actualizarse`)
-			return
-		}
+		if (!sensor || sensor.registroAmbienteEstructura === undefined || sensor.registroSensor === undefined) return
 		const nuevoEstado = !sensor.habilitado
 		updateSensorHabilitado(ambienteId, sensorId, nuevoEstado)
-		actualizarSensorActivo(ambienteId, sensor.sensorId, nuevoEstado).catch(error => {
+		actualizarSensorActivo(sensor.registroAmbienteEstructura, sensor.registroSensor, nuevoEstado).catch(error => {
 			console.error(`[API sensores] Fallo al actualizar ${sensor.id}:`, error)
 			updateSensorHabilitado(ambienteId, sensorId, !nuevoEstado)
 		})

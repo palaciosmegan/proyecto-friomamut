@@ -4,7 +4,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
 import type { Sensor } from '../types/sensor.types'
 
-type DataButtonProps = Omit<Sensor, 'posicion' | 'sensorId'> & {
+type DataButtonProps = Pick<Sensor, 'id' | 'valor' | 'habilitado' | 'orientation'> & {
   unidad: string
   onToggle: () => void
 }

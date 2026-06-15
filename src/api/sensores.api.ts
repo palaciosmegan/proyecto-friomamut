@@ -3,6 +3,10 @@ import { getApiUrl } from './api.config'
 
 type SensorApi = {
   sensorId?: unknown
+  registroAmbiente?: unknown
+  registroAmbienteLectura?: unknown
+  registroAmbienteEstructura?: unknown
+  registroSensor?: unknown
   id?: unknown
   orientation?: unknown
   posicion?: unknown
@@ -25,6 +29,10 @@ function isOrientation(value: unknown): value is Orientation {
   return value === 'INT' || value === 'EXT'
 }
 
+function isOptionalNumber(value: unknown): value is number | null | undefined {
+  return typeof value === 'number' || value === null || value === undefined
+}
+
 function normalizarSensor(value: unknown): Sensor {
   if (typeof value !== 'object' || value === null) {
     throw new Error('La estructura contiene un sensor invalido')
@@ -33,7 +41,11 @@ function normalizarSensor(value: unknown): Sensor {
   const sensor = value as SensorApi
 
   if (
-    (typeof sensor.sensorId !== 'number' && sensor.sensorId !== null)
+    (typeof sensor.sensorId !== 'number' && sensor.sensorId !== null && sensor.sensorId !== undefined)
+    || typeof sensor.registroAmbiente !== 'number'
+    || !isOptionalNumber(sensor.registroAmbienteLectura)
+    || !isOptionalNumber(sensor.registroAmbienteEstructura)
+    || !isOptionalNumber(sensor.registroSensor)
     || typeof sensor.id !== 'string'
     || !isOrientation(sensor.orientation)
     || typeof sensor.posicion !== 'number'
@@ -45,6 +57,10 @@ function normalizarSensor(value: unknown): Sensor {
 
   return {
     sensorId: typeof sensor.sensorId === 'number' ? sensor.sensorId : undefined,
+    registroAmbiente: sensor.registroAmbiente,
+    registroAmbienteLectura: typeof sensor.registroAmbienteLectura === 'number' ? sensor.registroAmbienteLectura : undefined,
+    registroAmbienteEstructura: typeof sensor.registroAmbienteEstructura === 'number' ? sensor.registroAmbienteEstructura : undefined,
+    registroSensor: typeof sensor.registroSensor === 'number' ? sensor.registroSensor : undefined,
     id: sensor.id,
     orientation: sensor.orientation,
     posicion: sensor.posicion,
@@ -72,16 +88,18 @@ export async function obtenerSensores(ambienteId: number): Promise<Sensor[]> {
 }
 
 export async function actualizarSensorActivo(
-  ambienteId: number,
-  sensorId: number,
+  registroAmbienteEstructura: number,
+  registroSensor: number,
   active: boolean,
 ) {
-  const url = getApiUrl(`/api/environments/${ambienteId}/active-process/sensors/active`)
+  const url = getApiUrl('/api/environments/active-process/sensors/active')
+
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      sensors: [{ id: sensorId, active }],
+      ambiente: registroAmbienteEstructura,
+      sensors: [{ sensor: registroSensor, active }],
     }),
   })
 
