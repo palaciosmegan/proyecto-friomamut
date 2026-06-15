@@ -1,16 +1,16 @@
 interface NumberInputProps {
   sensorId: string
-  correction: string
+  correction: number
   unidad: string
   onCorrectionChange: (id: string, value: string) => void
 }
 
 export const NumberInput = ({ sensorId, correction, unidad, onCorrectionChange }: NumberInputProps) => {
   const handleDecrement = () =>
-    onCorrectionChange(sensorId, ((parseFloat(correction) || 0) - 0.1).toFixed(1))
+    onCorrectionChange(sensorId, ((correction || 0) - 0.1).toFixed(1))
 
   const handleIncrement = () =>
-    onCorrectionChange(sensorId, ((parseFloat(correction) || 0) + 0.1).toFixed(1))
+    onCorrectionChange(sensorId, ((correction || 0) + 0.1).toFixed(1))
 
   return (
     <>
@@ -25,8 +25,9 @@ export const NumberInput = ({ sensorId, correction, unidad, onCorrectionChange }
           type="number"
           step="0.1"
           placeholder="0.0"
-          value={correction}
+          value={correction.toFixed(1)}
           onChange={e => onCorrectionChange(sensorId, e.target.value)}
+          readOnly
           className="w-11 text-center bg-transparent outline-none text-sm font-mono text-[var(--color-text-primary)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-[var(--color-text-secondary)]"
         />
         <span className={`text-sm font-mono select-none text-[var(--color-text-secondary)]`}>{unidad}</span>

@@ -1,13 +1,13 @@
 import clsx from 'clsx'
 import { useRootData } from '../RootDataContext'
 import { Nav } from '../ui/Nav'
-import { Calibrador, type CalibradorHandle } from '../ui/Calibrador'
-import { useRef } from 'react'
+import { Calibrador } from '../ui/Calibrador'
+// import { useRef } from 'react'
 
 export function Calibradores() {
   const { ambientes, activeTab, setActiveTab } = useRootData()
   
-	const refs = useRef<Record<number, CalibradorHandle | null>>({})
+	// const refs = useRef<Record<number, CalibradorHandle | null>>({})
 
   return (
     <div className="flex flex-col h-dvh">
@@ -20,7 +20,7 @@ export function Calibradores() {
 						className={clsx(a.id !== activeTab && 'hidden')}
 					>
 						<Calibrador
-							ref={el => { refs.current[a.id] = el }}
+							// ref={el => { refs.current[a.id] = el }}
 							ambienteId={a.id}
 							isActive={a.id === activeTab}
 						/>

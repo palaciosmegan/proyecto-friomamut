@@ -1,18 +1,18 @@
 import type { Orientation, Sensor } from '../types/sensor.types'
 import { getApiUrl } from './api.config'
 
-type SensorApi = {
-  sensorId?: unknown
-  registroAmbiente?: unknown
-  registroAmbienteLectura?: unknown
-  registroAmbienteEstructura?: unknown
-  registroSensor?: unknown
-  id?: unknown
-  orientation?: unknown
-  posicion?: unknown
-  habilitado?: unknown
-  valor?: unknown
-}
+// type SensorApi = {
+//   sensorId?: unknown
+//   registroAmbiente?: unknown
+//   registroAmbienteLectura?: unknown
+//   registroAmbienteEstructura?: unknown
+//   registroSensor?: unknown
+//   id?: unknown
+//   orientation?: unknown
+//   posicion?: unknown
+//   habilitado?: unknown
+//   valor?: unknown
+// }
 
 function getSensoresArray(data: unknown, ambienteId: number): unknown[] {
   if (Array.isArray(data)) return data
@@ -38,7 +38,7 @@ function normalizarSensor(value: unknown): Sensor {
     throw new Error('La estructura contiene un sensor invalido')
   }
 
-  const sensor = value as SensorApi
+  const sensor = value as Sensor
 
   if (
     (typeof sensor.sensorId !== 'number' && sensor.sensorId !== null && sensor.sensorId !== undefined)
@@ -57,15 +57,19 @@ function normalizarSensor(value: unknown): Sensor {
 
   return {
     sensorId: typeof sensor.sensorId === 'number' ? sensor.sensorId : undefined,
+    id: sensor.id,
+    codigoLectura: sensor.codigoLectura,
     registroAmbiente: sensor.registroAmbiente,
     registroAmbienteLectura: typeof sensor.registroAmbienteLectura === 'number' ? sensor.registroAmbienteLectura : undefined,
     registroAmbienteEstructura: typeof sensor.registroAmbienteEstructura === 'number' ? sensor.registroAmbienteEstructura : undefined,
     registroSensor: typeof sensor.registroSensor === 'number' ? sensor.registroSensor : undefined,
-    id: sensor.id,
+    environmentAbbreviation: sensor.environmentAbbreviation,
     orientation: sensor.orientation,
     posicion: sensor.posicion,
     habilitado: sensor.habilitado,
     valor: typeof sensor.valor === 'number' ? sensor.valor : null,
+    active: sensor.active,
+    unidad: sensor.unidad
   }
 }
 

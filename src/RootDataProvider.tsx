@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { obtenerAmbientes } from './api/ambientes.api'
 import { obtenerSensores } from './api/sensores.api'
+import { obtenerOffsets, type CalibratorOffsetMap } from './api/calibrador.api'
 import type { Ambiente } from './config/ambientes.config'
 import { RootDataContext } from './RootDataContext'
 import type { Sensor } from './types/sensor.types'
 
 export function RootDataProvider({ children }: { children: React.ReactNode }) {
-  const [ambientes, setAmbientes] = useState<Ambiente[]>([])
-  const [activeTab, setActiveTab] = useState<number | null>(null)
-  const [loaded, setLoaded] = useState(false)
+  const [ambientes, setAmbientes]     = useState<Ambiente[]>([])
+  const [activeTab, setActiveTab]     = useState<number | null>(null)
+  const [loaded, setLoaded]           = useState(false)
   const [sensoresMap, setSensoresMap] = useState<Record<number, Sensor[]>>({})
+  const [offsetsMap, setOffsetsMap]   = useState<CalibratorOffsetMap>({})
 
   useEffect(() => {
     obtenerAmbientes()
@@ -49,15 +51,42 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval)
   }, [activeTab])
 
+  useEffect(() => {
+    obtenerOffsets()
+      .then(setOffsetsMap)
+      .catch(error => console.error('[API offsets] Fallo al cargar offsets:', error))
+  }, [])
+
   const updateSensorHabilitado = useCallback((ambienteId: number, sensorId: string, habilitado: boolean) => {
     setSensoresMap(prev => ({
       ...prev,
-      [ambienteId]: (prev[ambienteId] ?? []).map(s => s.id === sensorId ? { ...s, habilitado } : s),
+      [ambienteId]: (prev[ambienteId] ?? []).map(s =>
+        s.id === sensorId ? { ...s, habilitado } : s
+      ),
+    }))
+  }, [])
+
+  const updateOffset = useCallback((ambienteId: number, sensorCodigo: string, nuevoOffset: number) => {
+    setOffsetsMap(prev => ({
+      ...prev,
+      [ambienteId]: {
+        ...(prev[ambienteId] ?? {}),
+        [sensorCodigo]: nuevoOffset,
+      },
     }))
   }, [])
 
   return (
-    <RootDataContext.Provider value={{ ambientes, activeTab, setActiveTab, loaded, sensoresMap, updateSensorHabilitado }}>
+    <RootDataContext.Provider value={{
+      ambientes,
+      activeTab,
+      setActiveTab,
+      loaded,
+      sensoresMap,
+      updateSensorHabilitado,
+      offsetsMap,
+      updateOffset,
+    }}>
       {children}
     </RootDataContext.Provider>
   )

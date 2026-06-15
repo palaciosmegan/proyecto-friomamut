@@ -1,9 +1,7 @@
-import { useState, memo, useCallback, useImperativeHandle, forwardRef, useMemo } from 'react'
+import { memo, forwardRef, useMemo, /*  useState,useCallback, useEffect, useImperativeHandle */ } from 'react'
 import { Message } from './Message'
-import type { Sensor } from '../types/sensor.types'
-import { SensorRow } from './SensorRow'
 import { useRootData } from '../RootDataContext'
-import { actualizarSensorActivo } from '../api/sensores.api'
+import { SensorTable } from './SensorTable'
 
 export interface CalibradorHandle {
 	reset: () => void
@@ -14,83 +12,44 @@ interface CalibradorProps {
 	isActive: boolean
 }
 
-const SensorTable = ({ sensores, corrections, onCorrectionChange, onEnabledChange, unidad }: {
-	sensores: Sensor[]
-	corrections: Record<string, string>
-	onCorrectionChange: (id: string, value: string) => void
-	onEnabledChange: (id: string) => void
-	unidad: string
-}) => (
-	<table className="border-collapse w-fit margin-auto flex-1  ">
-		<thead>
-			<tr className="border-b border-[var(--color-border-default)]">
-				{['', 'Descripción', 'Corrección', 'Temperatura', 'Auto'].map(col => (
-					<th key={col} className="py-2 px-3 text-center text-xs font-medium tracking-wider uppercase text-[var(--color-blue-soft)]">
-						{col}
-					</th>
-				))}
-			</tr>
-		</thead>
-		<tbody>
-			{sensores.map(s => (
-				<SensorRow
-					key={s.id}
-					sensor={s}
-					correction={corrections[s.id] ?? ''}
-					enabled={s.habilitado}
-					onCorrectionChange={onCorrectionChange}
-					onEnabledChange={onEnabledChange}
-					unidad={unidad}
-				/>
-			))}
-		</tbody>
-	</table>
-)
+export const Calibrador = memo(forwardRef<CalibradorHandle, CalibradorProps>(({ ambienteId }) => {
 
-export const Calibrador = memo(forwardRef<CalibradorHandle, CalibradorProps>(({ ambienteId }, ref) => {
-
-	const { sensoresMap, updateSensorHabilitado } = useRootData()
+	const { sensoresMap, offsetsMap } = useRootData()
 	const sensores = useMemo(() => sensoresMap[ambienteId] ?? [], [sensoresMap, ambienteId])
+	// const [corrections, setCorrections] = useState<Record<string, string>>({})
 
-	const [corrections, setCorrections] = useState<Record<string, string>>({})
+	// useEffect(() => {
+	// 	const offsets = offsetsMap[ambienteId] ?? {}
+	// 	setCorrections(
+	// 		Object.fromEntries(
+	// 			Object.entries(offsets)
+	// 				.filter(([, v]) => v !== 0)
+	// 				.map(([k, v]) => [k, String(v)])
+	// 		)
+	// 	)
+	// }, [ambienteId, offsetsMap])
 
-	const handleCorrectionChange = useCallback((id: string, value: string) => {
-		setCorrections(prev => ({ ...prev, [id]: value }))
-	}, [])
+	// const handleCorrectionChange = useCallback((id: string, value: string) => {
+	// 	setCorrections(prev => ({ ...prev, [id]: value }))
+	// }, [])
 
-	const handleEnabledChange = useCallback((sensorId: string) => {
-		const sensor = sensores.find(s => s.id === sensorId)
-		if (!sensor || sensor.registroAmbienteEstructura === undefined || sensor.registroSensor === undefined) return
-		const nuevoEstado = !sensor.habilitado
-		updateSensorHabilitado(ambienteId, sensorId, nuevoEstado)
-		actualizarSensorActivo(sensor.registroAmbienteEstructura, sensor.registroSensor, nuevoEstado).catch(error => {
-			console.error(`[API sensores] Fallo al actualizar ${sensor.id}:`, error)
-			updateSensorHabilitado(ambienteId, sensorId, !nuevoEstado)
-		})
-	}, [sensores, ambienteId, updateSensorHabilitado])
+	// const handleReset = useCallback(() => {
+	// 	const offsets = offsetsMap[ambienteId] ?? {}
+	// 	setCorrections(
+	// 		Object.fromEntries(
+	// 			Object.entries(offsets)
+	// 				.filter(([, v]) => v !== 0)
+	// 				.map(([k, v]) => [k, String(v)])
+	// 		)
+	// 	)
+	// }, [ambienteId, offsetsMap])
 
-	// const handleGuardar = useCallback(() => {
-	// setSensores(prev => prev.map(s => {
-	// 	const corr = parseFloat(corrections[s.id] ?? '0') || 0
-	// 	return corr !== 0 ? { ...s, valor: +((s.valor || 0) - corr).toFixed(1) } : s
-	// }))
-	// setSavedCorrections(prev => ({
-	// 	...prev,
-	// 	...Object.fromEntries(Object.entries(corrections).filter(([, v]) => v !== ''))
-	// }))
-	// setCorrections({})
-	// }, [corrections])
+	// useImperativeHandle(ref, () => ({ reset: handleReset }), [handleReset])
 
-	const handleReset = useCallback(() => {
-		setCorrections({})
-	}, [])
+	const left = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 100)
+	const right = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100)
 
-	useImperativeHandle(ref, () => ({ reset: handleReset }), [handleReset])
-
-	const left = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 102)
-	const right = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 101)
-
-	const hasCorrections = Object.values(corrections).some(v => v !== '')
+	// const hasCorrections = Object.values(corrections).some(v => v !== '')
 
 	return (
 		<div className="p-4">
@@ -100,17 +59,14 @@ export const Calibrador = memo(forwardRef<CalibradorHandle, CalibradorProps>(({ 
 				<div className="flex flex-col xl:flex-row gap-6 items-center">
 					<SensorTable
 						sensores={left}
-						corrections={corrections}
-						onCorrectionChange={handleCorrectionChange}
-						onEnabledChange={handleEnabledChange}
+						offsets={offsetsMap}
+						// onCorrectionChange={handleCorrectionChange}
 						unidad="°C"
 					/>
-					<div className="w-px bg-[var(--color-border-subtle)] self-stretch" />
 					<SensorTable
 						sensores={right}
-						corrections={corrections}
-						onCorrectionChange={handleCorrectionChange}
-						onEnabledChange={handleEnabledChange}
+						offsets={offsetsMap}
+						// onCorrectionChange={handleCorrectionChange}
 						unidad="°C"
 					/>
 				</div>
@@ -118,14 +74,13 @@ export const Calibrador = memo(forwardRef<CalibradorHandle, CalibradorProps>(({ 
 			<div className="flex gap-3 justify-end mt-6 mr-6">
 				<button
 					type="button"
-					// onClick={handleGuardar}
-					disabled={!hasCorrections}
+					// disabled={!hasCorrections}
 					className="btn btn-primary"
 				>
 					Guardar registro
 				</button>
 				<button type="button" className="btn btn-secondary">
-					No calibrado
+					Reset
 				</button>
 			</div>
 		</div>

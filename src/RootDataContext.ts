@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { Ambiente } from './config/ambientes.config'
 import type { Sensor } from './types/sensor.types'
+import type { CalibratorOffsetMap } from './api/calibrador.api'
 
 export type RootDataContextType = {
   ambientes: Ambiente[]
@@ -9,6 +10,8 @@ export type RootDataContextType = {
   loaded: boolean
   sensoresMap: Record<number, Sensor[]>
   updateSensorHabilitado: (ambienteId: number, sensorId: string, habilitado: boolean) => void
+  offsetsMap: CalibratorOffsetMap,
+  updateOffset: (ambienteId: number, sensorCodigo: string, nuevoOffset: number) => void,
 }
 
 export const RootDataContext = createContext<RootDataContextType | null>(null)
