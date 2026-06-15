@@ -3,8 +3,7 @@ import { Message } from './Message'
 import { useRootData } from '../RootDataContext'
 import { SensorTable } from './SensorTable'
 import { actualizarOffset } from '../api/calibrador.api'
-
-export type PendingChange = { offset: number; visibilidad: boolean }
+import type { PendingChange } from '../types/ui-types'
 
 interface CalibradorProps {
 	ambienteId: number

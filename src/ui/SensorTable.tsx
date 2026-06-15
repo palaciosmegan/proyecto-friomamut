@@ -2,7 +2,7 @@ import { memo } from "react"
 import { Toggle } from "./Toggle"
 import type { Sensor } from "../types/sensor.types"
 import { NumberInput } from "./NumberInput"
-import type { PendingChange } from "./Calibrador"
+import type { PendingChange } from "../types/ui-types"
 
 interface SensorTableProps {
   sensores: Sensor[]

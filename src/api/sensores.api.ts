@@ -1,19 +1,6 @@
 import type { Orientation, Sensor } from '../types/sensor.types'
 import { getApiUrl } from './api.config'
 
-// type SensorApi = {
-//   sensorId?: unknown
-//   registroAmbiente?: unknown
-//   registroAmbienteLectura?: unknown
-//   registroAmbienteEstructura?: unknown
-//   registroSensor?: unknown
-//   id?: unknown
-//   orientation?: unknown
-//   posicion?: unknown
-//   habilitado?: unknown
-//   valor?: unknown
-// }
-
 function getSensoresArray(data: unknown, ambienteId: number): unknown[] {
   if (Array.isArray(data)) return data
 
@@ -77,9 +64,12 @@ async function validarResponse(response: Response, url: string) {
   if (response.ok) return
 
   const body = await response.text()
-  throw new Error(
-    `La API ${url} respondio HTTP ${response.status} ${response.statusText}. Respuesta: ${body || '(vacia)'}`,
-  )
+  let message = `HTTP ${response.status} ${response.statusText}`
+  try {
+    const json = JSON.parse(body)
+    if (typeof json.message === 'string') message = json.message
+  } catch {}
+  throw new Error(message)
 }
 
 export async function obtenerSensores(ambienteId: number): Promise<Sensor[]> {
