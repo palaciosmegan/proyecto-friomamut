@@ -3,17 +3,15 @@ import clsx from 'clsx'
 interface ToggleProps {
   checked: boolean
   onChange: () => void
-  keepTurnedOn?: boolean
 }
 
-export const Toggle = ({ checked, onChange, keepTurnedOn }: ToggleProps) => {
-  const doNothing = () => console.log('This button is set as keep turned on!')
+export const Toggle = ({ checked, onChange }: ToggleProps) => {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
-      onClick={keepTurnedOn ? doNothing : onChange}
+      onClick={onChange}
       className={clsx(
         'relative w-10 h-6 rounded-full outline-none transition-all duration-300 ',
         'focus-visible:ring-2 focus-visible:ring-[var(--color-teal-glow)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-abyss)]',

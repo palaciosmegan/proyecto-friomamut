@@ -2,13 +2,13 @@ import { memo } from "react"
 import { Toggle } from "./Toggle"
 import type { Sensor } from "../types/sensor.types"
 import { NumberInput } from "./NumberInput"
+import type { PendingChange } from "./Calibrador"
 
 interface SensorTableProps {
   sensores: Sensor[]
-  offsets: Record<number, Record<string, number>>
-  enabled?: boolean
-  onCorrectionChange?: (id: string, value: string) => void
-  onEnabledChange?: (id: string) => void
+  pendingChanges: Record<string, PendingChange>
+  onOffsetChange?: (codigoLectura: string, value: number) => void
+  onVisibilidadChange?: (codigoLectura: string) => void
   unidad: string
 }
 
@@ -19,11 +19,9 @@ const getDisplayName = (sensor: Sensor) => {
   return 'S' + sensorName.split('S')[1].replace(/^0+(?!$)/, '') + ' - ' + orientationParsed[sensor.orientation]
 }
 
-export const SensorTable = memo(({ sensores, offsets, onCorrectionChange, unidad }: SensorTableProps) => {
-  const getOffset = (sensor: Sensor) => {
-    const offset = offsets[sensor.registroAmbiente]?.[sensor.codigoLectura] ?? 99
-    return offset
-  }
+export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onVisibilidadChange, unidad }: SensorTableProps) => {
+  const getChange = (sensor: Sensor): PendingChange =>
+    pendingChanges[sensor.codigoLectura] ?? { offset: 0, visibilidad: true }
 
   return (
     <table className="border-collapse w-fit margin-auto flex-1  ">
@@ -38,33 +36,36 @@ export const SensorTable = memo(({ sensores, offsets, onCorrectionChange, unidad
       </thead>
       <tbody>
         <>
-          {sensores.map(sensor => (
-            <tr key={sensor.id} className="border-b border-[var(--color-border-subtle)] transition-colors hover:bg-[rgba(33,150,243,0.04)]">
-              <td className="px-3">
-                <Toggle keepTurnedOn={sensor.posicion === 101}
-                  checked={true}
-                  onChange={() => console.log('aaaaaaaaaaaaaaaaaaaaaaaa')}
-                />
-              </td>
-              <td className="w-40 py-2 px-3 text-sm tracking-wider text-[var(--color-text-secondary)]">
-                <label htmlFor='correction'>
-                  {getDisplayName(sensor)}
-                </label>
-              </td>
-              <td className="flex py-2 px-3 gap-2">
-                <NumberInput
-                  sensorId={sensor.id}
-                  correction={getOffset(sensor)}
-                  unidad={unidad}
-                  onCorrectionChange={onCorrectionChange ?? (() => { })}
-                />
-              </td>
-              <td className="py-2 px-3 text-sm font-mono text-[var(--color-text-primary)] tabular-nums">
-                {sensor.valor != null && (sensor.valor + getOffset(sensor)).toFixed(1)} {unidad}
-              </td>
-              <td><button className="btn btn-primary scale-75 tracking-wide uppercase">auto calibrar</button></td>
-            </tr>
-          ))}
+          {sensores.map(sensor => {
+            const change = getChange(sensor)
+            return (
+              <tr key={sensor.id} className="border-b border-[var(--color-border-subtle)] transition-colors hover:bg-[rgba(33,150,243,0.04)]">
+                <td className="px-3">
+                  <Toggle
+                    checked={change.visibilidad}
+                    onChange={() => onVisibilidadChange?.(sensor.codigoLectura)}
+                  />
+                </td>
+                <td className="w-40 py-2 px-3 text-sm tracking-wider text-[var(--color-text-secondary)]">
+                  <label htmlFor={sensor.id}>
+                    {getDisplayName(sensor)}
+                  </label>
+                </td>
+                <td className="flex py-2 px-3 gap-2">
+                  <NumberInput
+                    sensorId={sensor.id}
+                    correction={change.offset}
+                    unidad={unidad}
+                    onCorrectionChange={(_, val) => onOffsetChange?.(sensor.codigoLectura, parseFloat(val) || 0)}
+                  />
+                </td>
+                <td className="py-2 px-3 text-sm font-mono text-[var(--color-text-primary)] tabular-nums">
+                  {sensor.valor != null && (sensor.valor + change.offset).toFixed(1)} {unidad}
+                </td>
+                <td><button className="btn btn-primary scale-75 tracking-wide uppercase">auto calibrar</button></td>
+              </tr>
+            )
+          })}
         </>
       </tbody>
     </table>
