@@ -7,11 +7,11 @@ import { RootDataContext } from './RootDataContext'
 import type { Sensor } from './types/sensor.types'
 
 export function RootDataProvider({ children }: { children: React.ReactNode }) {
-  const [ambientes, setAmbientes]     = useState<Ambiente[]>([])
-  const [activeTab, setActiveTab]     = useState<number | null>(null)
-  const [loaded, setLoaded]           = useState(false)
+  const [ambientes, setAmbientes] = useState<Ambiente[]>([])
+  const [activeTab, setActiveTab] = useState<number | null>(null)
+  const [loaded, setLoaded] = useState(false)
   const [sensoresMap, setSensoresMap] = useState<Record<number, Sensor[]>>({})
-  const [offsetsMap, setOffsetsMap]   = useState<CalibratorOffsetMap>({})
+  const [offsetsMap, setOffsetsMap] = useState<CalibratorOffsetMap>({})
 
   useEffect(() => {
     obtenerAmbientes()
@@ -76,6 +76,12 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
+  const refreshSensores = useCallback((ambienteId: number) => {
+    obtenerSensores(ambienteId)
+      .then(data => setSensoresMap(prev => ({ ...prev, [ambienteId]: data })))
+      .catch(error => console.error(`[API sensores] Fallo al refrescar tunel ${ambienteId}:`, error))
+  }, [])
+
   return (
     <RootDataContext.Provider value={{
       ambientes,
@@ -86,6 +92,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       updateSensorHabilitado,
       offsetsMap,
       updateOffset,
+      refreshSensores,
     }}>
       {children}
     </RootDataContext.Provider>

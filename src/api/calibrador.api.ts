@@ -38,7 +38,7 @@ type ActualizarOffsetCalculado = {
 // Record<ambienteRegistro, Record<sensorCodigo, offset>>
 export type CalibratorOffsetMap = Record<number, Record<string, number>>
 
-export type ActualizarOffsetRequest = ActualizarOffsetDirecto | ActualizarOffsetCalculado
+export type ActualizarOffsetRequest = ActualizarOffsetDirecto | ActualizarOffsetCalculado | ActualizarOffsetDirecto[]
 
 // ── Normalización ──────────────────────────────────────────
 

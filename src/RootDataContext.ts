@@ -12,6 +12,7 @@ export type RootDataContextType = {
   updateSensorHabilitado: (ambienteId: number, sensorId: string, habilitado: boolean) => void
   offsetsMap: CalibratorOffsetMap,
   updateOffset: (ambienteId: number, sensorCodigo: string, nuevoOffset: number) => void,
+  refreshSensores: (ambienteId: number) => void
 }
 
 export const RootDataContext = createContext<RootDataContextType | null>(null)

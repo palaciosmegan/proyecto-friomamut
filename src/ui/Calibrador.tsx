@@ -11,18 +11,18 @@ interface CalibradorProps {
 }
 
 export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
-	const { sensoresMap, offsetsMap, updateOffset } = useRootData()
+	const { sensoresMap, offsetsMap, updateOffset, refreshSensores } = useRootData()
 	const sensores = useMemo(() => sensoresMap[ambienteId] ?? [], [sensoresMap, ambienteId])
 
 	const [pendingChanges, setPendingChanges] = useState<Record<string, PendingChange>>({})
 
 	useEffect(() => {
 		const ambienteOffsets = offsetsMap[ambienteId] ?? {}
-		setPendingChanges(
+		setPendingChanges(prev =>
 			Object.fromEntries(
 				Object.entries(ambienteOffsets).map(([codigo, offset]) => [
 					codigo,
-					{ offset, visibilidad: true },
+					{ offset, visibilidad: prev[codigo]?.visibilidad ?? true },
 				])
 			)
 		)
@@ -55,33 +55,27 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 	}, [])
 
 	const handleGuardar = useCallback(async () => {
-		await Promise.all(
-			sensores
-				.filter(sensor =>
-					sensor.registroSensor !== undefined &&
-					(pendingChanges[sensor.codigoLectura]?.offset ?? 0) !== (offsetsMap[ambienteId]?.[sensor.codigoLectura] ?? 0)
-				)
-				.map(sensor => {
-					const change = pendingChanges[sensor.codigoLectura]
-					return actualizarOffset({
-						ambiente: sensor.registroAmbiente,
-						sensor: sensor.registroSensor!,
-						offset: change?.offset ?? 0,
-						visibilidad: change?.visibilidad ?? true,
-					}).then(() =>
-						updateOffset(sensor.registroAmbiente, sensor.codigoLectura, change?.offset ?? 0)
-					)
-				})
+		const changed = sensores.filter(s =>
+			s.registroSensor !== undefined &&
+			(pendingChanges[s.codigoLectura]?.offset ?? 0) !== (offsetsMap[ambienteId]?.[s.codigoLectura] ?? 0)
 		)
-	}, [sensores, pendingChanges, updateOffset, ambienteId, offsetsMap])
+
+		await actualizarOffset(sensores.filter(s => s.registroSensor !== undefined).map(sensor => ({
+			ambiente: sensor.registroAmbiente,
+			sensor: sensor.registroSensor!,
+			offset: pendingChanges[sensor.codigoLectura]?.offset ?? 0,
+			visibilidad: pendingChanges[sensor.codigoLectura]?.visibilidad ?? true,
+		})))
+
+		changed.forEach(sensor =>
+			updateOffset(sensor.registroAmbiente, sensor.codigoLectura, pendingChanges[sensor.codigoLectura]?.offset ?? 0)
+		)
+
+		refreshSensores(ambienteId)
+	}, [sensores, pendingChanges, offsetsMap, ambienteId, updateOffset, refreshSensores])
 
 	const left = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 100)
 	const right = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100)
-
-	const hasChanges = sensores.some(s => {
-		const pending = pendingChanges[s.codigoLectura]
-		return (pending?.offset ?? 0) !== (offsetsMap[ambienteId]?.[s.codigoLectura] ?? 0)
-	})
 
 	return (
 		<div className="p-4">
@@ -109,12 +103,11 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 				<button
 					type="button"
 					onClick={handleGuardar}
-					disabled={!hasChanges}
 					className="btn btn-primary"
 				>
 					Guardar registro
 				</button>
-				<button type="button" onClick={handleReset} disabled={!hasChanges} className="btn btn-secondary">
+				<button type="button" onClick={handleReset} className="btn btn-secondary">
 					Reset
 				</button>
 			</div>
