@@ -1,15 +1,15 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import { useRootData } from '../RootDataContext'
 import { Nav } from '../ui/Nav'
-import { NumberInput } from '../ui/NumberInput'
+// import { NumberInput } from '../ui/NumberInput'
 
 export function Balizas() {
   const { ambientes, activeTab, setActiveTab } = useRootData()
-  const [corrections, setCorrections] = useState<Record<string, string>>({})
+  // const [corrections, setCorrections] = useState(0)
 
-  const handleCorrectionChange = (id: string, value: string) => {
-    setCorrections(current => ({ ...current, [id]: value }))
-  }
+  // const handleCorrectionChange = (id: string, value: string) => {
+  //   setCorrections(current => ({ ...current, [id]: value }))
+  // }
 
   return (
     <div className="flex flex-col h-dvh">
@@ -25,10 +25,10 @@ export function Balizas() {
           // className={clsx(a.id !== activeTab && 'hidden')}
           >
             <h3>{a.label}</h3>
-            <NumberInput sensorId={`baliza-${a.id}`}
-              correction={corrections[`baliza-${a.id}`] ?? ''}
+            {/* <NumberInput sensorId={`baliza-${a.id}`}
+              correction={0}
               onCorrectionChange={handleCorrectionChange}
-              unidad={'°C'} />
+              unidad={'°C'} /> */}
             <button className='btn btn-secondary'>Guardar</button>
             
           </div>

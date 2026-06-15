@@ -64,12 +64,9 @@ async function validarResponse(response: Response, url: string) {
   if (response.ok) return
 
   const body = await response.text()
-  let message = `HTTP ${response.status} ${response.statusText}`
-  try {
-    const json = JSON.parse(body)
-    if (typeof json.message === 'string') message = json.message
-  } catch {}
-  throw new Error(message)
+  throw new Error(
+    `La API ${url} respondio HTTP ${response.status} ${response.statusText}. Respuesta: ${body || '(vacia)'}`,
+  )
 }
 
 export async function obtenerSensores(ambienteId: number): Promise<Sensor[]> {
