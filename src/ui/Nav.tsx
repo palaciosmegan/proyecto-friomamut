@@ -22,9 +22,9 @@ export const Nav = ({ TABS, activeId, onSelect, hideTabs }: NavProps) => {
 						value={pathname}
 						onChange={(e) => navigate(e.target.value)}
 					>
-						<option value='/'>Túneles</option>
-						<option value='/calibradores'>Calibradores</option>
-						<option value='/balizas'>Balizas</option>
+						<option className="bg-gray-800" value='/'>Túneles</option>
+						<option className="bg-gray-800" value='/calibradores'>Calibradores</option>
+						<option className="bg-gray-800" value='/balizas'>Balizas</option>
 					</select>
 					<svg
 						className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
