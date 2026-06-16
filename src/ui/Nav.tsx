@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "framer-motion";
 import { clsx } from "clsx";
 import type { Ambiente } from "../config/ambientes.config";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -47,29 +46,15 @@ export const Nav = ({ TABS, activeId, onSelect, hideTabs }: NavProps) => {
 								onClick={() => onSelect(id)}
 								className="relative px-4 py-1.5 rounded-full text-sm transition-all duration-200 z-10"
 							>
-								<AnimatePresence>
-									{activeId === id && (
-										<motion.span
-											layoutId="active-tab-pill"
-											className="
-										absolute inset-0 rounded-full
-										bg-white/14
-										border border-white/22
-										shadow-[0_2px_12px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.18)]
-									"
-											initial={{ opacity: 0, scale: 0.82 }}
-											animate={{ opacity: 1, scale: 1 }}
-											exit={{ opacity: 0, scale: 0.9 }}
-											transition={{
-												type: 'spring',
-												stiffness: 500,
-												damping: 22,
-												mass: 0.8,
-											}}
-										/>
+								<span
+									className={clsx(
+										"absolute inset-0 rounded-full transition-all duration-200",
+										"border border-white/22 shadow-[0_2px_12px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.18)]",
+										activeId === id
+											? "opacity-100 scale-100 bg-white/14"
+											: "opacity-0 scale-90 bg-transparent"
 									)}
-								</AnimatePresence>
-
+								/>
 								<span
 									className={clsx(
 										"relative z-10 transition-all duration-200 font-semibold",
