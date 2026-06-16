@@ -78,11 +78,11 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 	const right = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100)
 
 	return (
-		<div className="p-4">
+		<div className="xl:p-4">
 			{sensores.length === 0 ? (
 				<Message />
 			) : (
-				<div className="flex flex-col xl:flex-row gap-6 items-center">
+				<div className="flex flex-col hmi:flex-row gap-6 items-center">
 					<SensorTable
 						sensores={left}
 						pendingChanges={pendingChanges}

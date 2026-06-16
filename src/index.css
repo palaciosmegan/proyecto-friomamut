@@ -7,7 +7,10 @@
 
 @theme {
   --text-xxs: 0.55rem;
+  --text-s: 0.65rem;
   --text-card-large: 1.2rem;
+
+  --breakpoint-hmi: 1180px;
 
   /* Core palette */
   --color-void: #030912;
