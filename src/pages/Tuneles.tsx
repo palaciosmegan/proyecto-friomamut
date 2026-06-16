@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { actualizarSensorActivo } from '../api/sensores.api'
 import type { Ambiente } from '../config/ambientes.config'
 import { useRootData } from '../RootDataContext'
@@ -149,16 +149,6 @@ interface TunelesPanelProps {
 const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
   const { sensoresMap, updateSensorHabilitado } = useRootData()
   const sensores = useMemo(() => sensoresMap[ambiente.id] ?? [], [sensoresMap, ambiente.id])
-  const imgRef = useRef<HTMLImageElement>(null)
-  const [imgHeight, setImgHeight] = useState<number | undefined>()
-
-  useEffect(() => {
-    const img = imgRef.current
-    if (!img) return
-    const ro = new ResizeObserver(() => setImgHeight(img.clientHeight))
-    ro.observe(img)
-    return () => ro.disconnect()
-  }, [])
 
   const handleToggle = useCallback((sensorId: string) => {
     const sensor = sensores.find(s => s.id === sensorId)
@@ -176,7 +166,6 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
   return (
     <div className="relative w-full h-full">
       <img
-        ref={imgRef}
         src={imagenes.find((imagen) => imagen.variante === imageVariant)?.imagen}
         alt=""
         className={`rotate-180 w-full max-h-full object-fill`}
@@ -186,7 +175,7 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
       {sensoresLoaded && sensores.length === 0 ? (
         <Message />
       ) : (
-        <div className="absolute inset-x-0 top-0" style={{ height: imgHeight ?? '100%' }}>
+        <div className="absolute inset-x-0 top-0" style={{ height: '43vw' }}>
           <div
             className="grid h-full place-items-center items-stretch"
             style={{
@@ -232,11 +221,8 @@ export function Tuneles() {
       <main className="flex-1 overflow-hidden pb-[30px] relative">
         {loaded && ambientes.length === 0 ? (
           <Message text="Sin tuneles configurados" />
-        ) : ambientes.map(ambiente => (
-          <div
-            key={ambiente.id}
-            className={`absolute inset-0 h-full${ambiente.id !== activeTab ? ' invisible' : ''}`}
-          >
+        ) : ambientes.map(ambiente => ambiente.id === activeTab && (
+          <div key={ambiente.id} className="absolute inset-0 h-full">
             <TunelesPanel
               ambiente={ambiente}
               imageVariant={ambiente.imageVariant ?? 'A'}
