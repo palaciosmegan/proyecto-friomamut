@@ -12,4 +12,7 @@ export default defineConfig({
     viteSingleFile(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  build: {
+    sourcemap: false
+  }
 })
