@@ -4,6 +4,11 @@
 
 @custom-variant short (@media (max-height: 590px));
 
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
 @theme {
   --text-xxs: 0.55rem;
   --text-s: 0.65rem;
