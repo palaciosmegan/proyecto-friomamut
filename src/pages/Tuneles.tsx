@@ -167,7 +167,8 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
     <div className="relative w-full h-full">
       <img
         src={imagenes.find((imagen) => imagen.variante === imageVariant)?.imagen}
-        alt=""
+        alt={imagenes.find((imagen) => imagen.variante === imageVariant)?.nombre}
+        decoding='async'
         className={`rotate-180 w-full max-h-full object-fill`}
         style={{ minHeight: MIN_HEIGHT_VW }}
       />
