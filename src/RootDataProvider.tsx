@@ -47,7 +47,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       obtenerSensores(activeTab)
         .then(data => setSensoresMap(prev => ({ ...prev, [activeTab]: data })))
         .catch(error => console.error(`[API sensores] Fallo al polling tunel ${activeTab}:`, error))
-    }, 10_000)
+    }, 5_000)
     return () => clearInterval(interval)
   }, [activeTab])
 
