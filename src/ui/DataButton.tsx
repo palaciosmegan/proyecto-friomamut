@@ -62,7 +62,7 @@ export const DataButton = memo(({
         </p>
       </span>
 
-      {valor !== null && isInNormalRange(valor, id) ? (
+      {valor !== null && (isInNormalRange(valor, id) || id.substring(0, 1) == 'A') ? (
         <div className="flex items-baseline gap-[2px]">
           <span className={clsx(
             'text-sm lg:text-card-large 2xl:text-xl font-bold tabular-nums leading-none',
