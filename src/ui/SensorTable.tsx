@@ -23,6 +23,12 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
   const getChange = (sensor: Sensor): PendingChange =>
     pendingChanges[sensor.codigoLectura] ?? { offset: 0, visibilidad: true }
 
+  const autocalibrar = (sensor: Sensor) => {
+    if (sensor.valor == null) return
+    const change = getChange(sensor)
+    onOffsetChange?.(sensor.codigoLectura, change.offset - sensor.valor)
+  }
+
   return (
     <table className="border-collapse w-fit margin-auto flex-1">
       <thead>
@@ -60,10 +66,16 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
                   />
                 </td>
                 <td className="text-center py-2 px-3 text-sm font-mono text-[var(--color-text-primary)] tabular-nums">
-                  {sensor.valor != null && (sensor.valor + change.offset).toFixed(1)} {unidad}
+                  {sensor.valor != null ? sensor.valor.toFixed(1) : '—'} {unidad}
                 </td>
                 <td className="flex justify-center">
-                  <button className="btn btn-primary scale-75 tracking-wide uppercase">auto calibrar</button>
+                  <button
+                    type="button"
+                    onClick={() => autocalibrar(sensor)}
+                    className="btn btn-primary scale-75 tracking-wide uppercase"
+                  >
+                    auto calibrar
+                  </button>
                 </td>
               </tr>
             )
