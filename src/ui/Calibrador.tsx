@@ -4,6 +4,8 @@ import { useRootData } from '../RootDataContext'
 import { SensorTable } from './SensorTable'
 import { actualizarOffset } from '../api/calibrador.api'
 import type { PendingChange } from '../types/ui-types'
+import { useCalibradorResponse } from '../hooks/useCalibradorResponse'
+import { Toast } from './Toast'
 
 interface CalibradorProps {
 	ambienteId: number
@@ -15,6 +17,7 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 	const sensores = useMemo(() => sensoresMap[ambienteId] ?? [], [sensoresMap, ambienteId])
 
 	const [pendingChanges, setPendingChanges] = useState<Record<string, PendingChange>>({})
+	const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
 	useEffect(() => {
 		const ambienteOffsets = offsetsMap[ambienteId] ?? {}
@@ -54,64 +57,76 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 		}))
 	}, [])
 
-	const handleGuardar = useCallback(async () => {
+	const handleGuardar = useCallback(() => {
 		const changed = sensores.filter(s =>
 			s.registroSensor !== undefined &&
 			(pendingChanges[s.codigoLectura]?.offset ?? 0) !== (offsetsMap[ambienteId]?.[s.codigoLectura] ?? 0)
 		)
 
-		await actualizarOffset(sensores.filter(s => s.registroSensor !== undefined).map(sensor => ({
-			ambiente: sensor.registroAmbiente,
-			sensor: sensor.registroSensor!,
-			offset: pendingChanges[sensor.codigoLectura]?.offset ?? 0,
-			visibilidad: pendingChanges[sensor.codigoLectura]?.visibilidad ?? true,
-		})))
+		wrapFunction(async () => {
+			await actualizarOffset(sensores.filter(s => s.registroSensor !== undefined).map(sensor => ({
+				ambiente: sensor.registroAmbiente,
+				sensor: sensor.registroSensor!,
+				offset: pendingChanges[sensor.codigoLectura]?.offset ?? 0,
+				visibilidad: pendingChanges[sensor.codigoLectura]?.visibilidad ?? true,
+			})))
 
-		changed.forEach(sensor =>
-			updateOffset(sensor.registroAmbiente, sensor.codigoLectura, pendingChanges[sensor.codigoLectura]?.offset ?? 0)
-		)
+			changed.forEach(sensor =>
+				updateOffset(sensor.registroAmbiente, sensor.codigoLectura, pendingChanges[sensor.codigoLectura]?.offset ?? 0)
+			)
 
-		refreshSensores(ambienteId)
-	}, [sensores, pendingChanges, offsetsMap, ambienteId, updateOffset, refreshSensores])
+			refreshSensores(ambienteId)
+		})
+	}, [sensores, pendingChanges, offsetsMap, ambienteId, updateOffset, refreshSensores, wrapFunction])
 
 	const left = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 100)
 	const right = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100)
 
 	return (
-		<div className="xl:p-4">
-			{sensores.length === 0 ? (
-				<Message />
-			) : (
-				<div className="flex flex-col hmi:flex-row gap-6 items-center">
-					<SensorTable
-						sensores={left}
-						pendingChanges={pendingChanges}
-						onOffsetChange={handleOffsetChange}
-						onVisibilidadChange={handleVisibilidadChange}
-						unidad="°C"
-					/>
-					<SensorTable
-						sensores={right}
-						pendingChanges={pendingChanges}
-						onOffsetChange={handleOffsetChange}
-						onVisibilidadChange={handleVisibilidadChange}
-						unidad="°C"
-					/>
+		<>
+			<div className="xl:p-4">
+				{sensores.length === 0 ? (
+					<Message />
+				) : (
+					<div className="flex flex-col hmi:flex-row gap-6 items-center">
+						<SensorTable
+							sensores={left}
+							pendingChanges={pendingChanges}
+							onOffsetChange={handleOffsetChange}
+							onVisibilidadChange={handleVisibilidadChange}
+							unidad="°C"
+						/>
+						<SensorTable
+							sensores={right}
+							pendingChanges={pendingChanges}
+							onOffsetChange={handleOffsetChange}
+							onVisibilidadChange={handleVisibilidadChange}
+							unidad="°C"
+						/>
+					</div>
+				)}
+				<div className="flex gap-3 justify-end mt-6 mr-6">
+					<button
+						type="button"
+						onClick={handleGuardar}
+						className="btn btn-primary"
+					>
+						Guardar registro
+					</button>
+					<button type="button" onClick={handleReset} className="btn btn-secondary">
+						Reset
+					</button>
 				</div>
-			)}
-			<div className="flex gap-3 justify-end mt-6 mr-6">
-				<button
-					type="button"
-					onClick={handleGuardar}
-					className="btn btn-primary"
-				>
-					Guardar registro
-				</button>
-				<button type="button" onClick={handleReset} className="btn btn-secondary">
-					Reset
-				</button>
 			</div>
-		</div>
+			{response !== null && (
+				<Toast
+					key={toastKey}
+					message={response.message}
+					variant={response.ok ? 'success' : 'error'}
+					callback={clearMessage}
+				/>
+			)}
+		</>
 	)
 })
 
