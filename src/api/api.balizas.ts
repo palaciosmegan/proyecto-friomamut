@@ -36,7 +36,7 @@ const normalizarBalizas = (data: unknown): ApiBaliza[] => {
 }
 
 export async function obtenerBalizas(): Promise<ApiBaliza[]> {
-  const url = getApiUrl('/api/balizas')
+  const url = getApiUrl('/beacons')
   const response = await fetch(url)
   await validarResponse(response, url)
 
@@ -45,7 +45,7 @@ export async function obtenerBalizas(): Promise<ApiBaliza[]> {
 }
 
 export async function actualizarBaliza(request: ActualizarBaliza) {
-  const url = getApiUrl('/api/balizas')
+  const url = getApiUrl('/beacons')
 
   const response = await fetch(url, {
     method: 'POST',

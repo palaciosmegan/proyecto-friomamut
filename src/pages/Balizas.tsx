@@ -3,8 +3,15 @@ import { useRootData } from '../RootDataContext'
 import { Nav } from '../ui/Nav'
 import { NumberInput } from '../ui/NumberInput'
 import { actualizarBaliza } from '../api/api.balizas'
+import type { Semaforo } from '../api/api.balizas'
 
-type SemaforoStatus = 'rojo' | 'amarillo' | 'verde' | 'none'
+type SemaforoStatus = Semaforo | 'none'
+
+type PendingBaliza = {
+  int: number | null
+  ext: number | null
+  status: SemaforoStatus | null
+}
 
 const LIGHTS: { key: SemaforoStatus; color: string; shadow: string }[] = [
   { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488' },
@@ -34,27 +41,17 @@ function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: 
   )
 }
 
-type BalizaState = {
-  int: number | null
-  ext: number | null
-  status: SemaforoStatus | null
-}
-
 export function Balizas() {
-  const { ambientes, activeTab, setActiveTab } = useRootData()
-  const [balizas, setBalizas] = useState<Record<number, BalizaState>>({})
+  const { ambientes, activeTab, setActiveTab, balizas } = useRootData()
+  const [pending, setPending] = useState<Record<number, PendingBaliza>>({})
 
-  const getBaliza = (id: number): BalizaState =>
-    balizas[id] ?? { int: null, ext: null, status: null }
+  const getPending = (id: number): PendingBaliza =>
+    pending[id] ?? { int: null, ext: null, status: null }
 
-  const updateBalizas = useCallback((id: number, int: number | null, ext: number | null, status: SemaforoStatus | null) => {
-    setBalizas(prev => ({
+  const updatePending = useCallback((id: number, patch: Partial<PendingBaliza>) => {
+    setPending(prev => ({
       ...prev,
-      [id]: {
-        int: int ?? prev[id]?.int ?? null,
-        ext: ext ?? prev[id]?.ext ?? null,
-        status: status ?? prev[id]?.status ?? null,
-      }
+      [id]: { ...(prev[id] ?? { int: null, ext: null, status: null }), ...patch }
     }))
   }, [])
 
@@ -64,54 +61,67 @@ export function Balizas() {
 
       <main className="flex-1 pb-[30px] overflow-y-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 p-6">
-          {ambientes.map(a => (
-            <div
-              key={a.id}
-              className="flex flex-row gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
-            >
-              <Semaforo
-                status={getBaliza(a.id).status ?? 'none'}
-                onChange={s => updateBalizas(a.id, null, null, s)}
-              />
+          {Object.values(balizas).map(b => {
+            const p = getPending(b.id)
+            const status = (p.status ?? b.status ?? 'none') as SemaforoStatus
+            const int = p.int ?? b.int ?? 0
+            const ext = p.ext ?? b.ext ?? 0
 
-              <div className="flex flex-col gap-4 flex-1">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-blue-soft)]">
-                  {a.label}
-                </h3>
+            return (
+              <div
+                key={b.id}
+                className="flex flex-row gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
+              >
+                <Semaforo
+                  status={status}
+                  onChange={s => updatePending(b.id, { status: s })}
+                />
 
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-[var(--color-text-secondary)]">Input A</span>
-                  <NumberInput
-                    id={`baliza-${a.id}-int`}
-                    value={getBaliza(a.id).int ?? 0}
-                    unit="°C"
-                    onChange={val => updateBalizas(a.id, val, null, null)}
-                  />
+                <div className="flex flex-col gap-4 flex-1">
+                  <div className='flex justify-between items-center'>
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-blue-soft)]">
+                      {b.label}
+                    </h3>
+                    <p className='text-s tracking-wider'> {b.processActive ? 'PROCESO ACTIVO' : 'SIN PROCESO ACTIVO'}</p>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-[var(--color-text-secondary)]">Input A</span>
+                    <NumberInput
+                      id={`baliza-${b.id}-int`}
+                      value={int}
+                      unit="°C"
+                      onChange={val => updatePending(b.id, { int: val })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-[var(--color-text-secondary)]">Input B</span>
+                    <NumberInput
+                      id={`baliza-${b.id}-ext`}
+                      value={ext}
+                      unit="°C"
+                      onChange={val => updatePending(b.id, { ext: val })}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={!int}
+                    className="btn btn-primary w-full mt-auto"
+                    onClick={() => actualizarBaliza({
+                      id: b.id,
+                      int,
+                      ext,
+                      status: status === 'none' ? null : status,
+                    })}
+                  >
+                    Guardar
+                  </button>
                 </div>
-
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-[var(--color-text-secondary)]">Input B</span>
-                  <NumberInput
-                    id={`baliza-${a.id}-ext`}
-                    value={getBaliza(a.id).ext ?? 0}
-                    unit="°C"
-                    onChange={val => updateBalizas(a.id, null, val, null)}
-                  />
-                </div>
-                <button
-                  type="button"
-                  disabled={!getBaliza(a.id).int}
-                  className="btn btn-primary w-full mt-auto"
-                  onClick={() => {
-                    const b = getBaliza(a.id)
-                    actualizarBaliza({ id: a.id, int: b.int, ext: b.ext, status: b.status === 'none' ? null : b.status ?? null })
-                  }}
-                >
-                  Guardar
-                </button>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </main>
     </div>
