@@ -18,7 +18,7 @@ export const NumberInput = ({ id, value, step = 0.1, unit, onChange }: NumberInp
       >
         -
       </button>
-      <div className="items-center gap-0 py-1 transition-all focus-within:shadow-[0_0_0_3px_rgba(33,150,243,0.25),var(--glow-blue)]">
+      <div className="items-center justify-self-center gap-0 py-1 transition-all focus-within:shadow-[0_0_0_3px_rgba(33,150,243,0.25),var(--glow-blue)]">
         <input
           id={id}
           type="text"
