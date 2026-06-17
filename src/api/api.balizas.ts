@@ -1,6 +1,6 @@
 import { getApiUrl } from './api.config'
 
-export type Semaforo = 'verde' | 'amarillo' | 'rojo'
+export type Semaforo = 'verde' | 'ambar' | 'rojo'
 
 export type ApiBaliza = {
   id: number,
@@ -8,14 +8,14 @@ export type ApiBaliza = {
   processActive?: boolean
   int: null | number
   ext: null | number
-  status?: null | 'verde' | 'amarillo' | 'rojo'
+  status?: null | 'verde' | 'ambar' | 'rojo'
 }
 
 type ActualizarBaliza = {
   id: number,
   int: null | number
   ext: null | number
-  status: null | 'verde' | 'amarillo' | 'rojo'
+  status: null | 'verde' | 'ambar' | 'rojo'
 }
 
 async function validarResponse(response: Response, url: string) {

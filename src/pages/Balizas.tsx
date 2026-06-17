@@ -15,7 +15,7 @@ type PendingBaliza = {
 
 const LIGHTS: { key: SemaforoStatus; color: string; shadow: string }[] = [
   { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488' },
-  { key: 'amarillo', color: '#eab308', shadow: '0 0 10px 2px #eab30888' },
+  { key: 'ambar', color: '#eab308', shadow: '0 0 10px 2px #eab30888' },
   { key: 'verde', color: '#22c55e', shadow: '0 0 10px 2px #22c55e88' },
 ]
 
@@ -55,6 +55,8 @@ export function Balizas() {
     }))
   }, [])
 
+  // const onlyUpdateLight = () =>
+
   return (
     <div className="flex flex-col h-dvh">
       <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} hideTabs />
@@ -74,7 +76,15 @@ export function Balizas() {
               >
                 <Semaforo
                   status={status}
-                  onChange={s => updatePending(b.id, { status: s })}
+                  onChange={s => {
+                    updatePending(b.id, { status: s })
+                    actualizarBaliza({
+                      id: b.id,
+                      int,
+                      ext,
+                      status: s === 'none' ? null : s,
+                    })
+                  }}
                 />
 
                 <div className="flex flex-col gap-4 flex-1">
