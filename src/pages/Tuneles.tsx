@@ -7,6 +7,8 @@ import { Chip } from '../ui/Chip'
 import { DataButton } from '../ui/DataButton'
 import { Message } from '../ui/Message'
 import { Nav } from '../ui/Nav'
+import { Toast } from '../ui/Toast'
+import { useCalibradorResponse } from '../hooks/useCalibradorResponse'
 import _imagenes from '../assets/imagenes_ambientes.json'
 
 type ImagenAmbiente = { nombre: string; variante: string; imagen: string }
@@ -150,22 +152,25 @@ interface TunelesPanelProps {
 const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
   const { sensoresMap, updateSensorHabilitado } = useRootData()
   const sensores = useMemo(() => sensoresMap[ambiente.id] ?? [], [sensoresMap, ambiente.id])
+  const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
   const handleToggle = useCallback((sensorId: string) => {
     const sensor = sensores.find(s => s.id === sensorId)
     if (!sensor || sensor.registroAmbienteEstructura === undefined || sensor.registroSensor === undefined) return
     const nuevoEstado = !sensor.habilitado
     updateSensorHabilitado(ambiente.id, sensorId, nuevoEstado)
-    actualizarSensorActivo(sensor.registroAmbienteEstructura, sensor.registroSensor, nuevoEstado).catch(error => {
-      console.error(`[API sensores] Fallo al actualizar ${sensor.id}:`, error)
-      updateSensorHabilitado(ambiente.id, sensorId, !nuevoEstado)
-    })
-  }, [sensores, ambiente.id, updateSensorHabilitado])
+    wrapFunction(async () => {
+      await actualizarSensorActivo(sensor.registroAmbienteEstructura!, sensor.registroSensor!, nuevoEstado)
+    }).catch(() => updateSensorHabilitado(ambiente.id, sensorId, !nuevoEstado))
+  }, [sensores, ambiente.id, updateSensorHabilitado, wrapFunction])
 
   const sensoresLoaded = ambiente.id in sensoresMap
 
   return (
     <div className="relative w-full h-full">
+      {response !== null && (
+        <Toast key={toastKey} message={response.message} variant={response.ok ? 'success' : 'error'} callback={clearMessage} />
+      )}
       <img
         src={imagenes.find((imagen) => imagen.variante === imageVariant)?.imagen}
         alt={imagenes.find((imagen) => imagen.variante === imageVariant)?.nombre}
@@ -215,7 +220,10 @@ TunelesPanel.displayName = 'TunelesPanel'
 
 export function Tuneles() {
   const { ambientes, activeTab, setActiveTab, loaded, balizas } = useRootData()
-  const processActive = activeTab !== null ? balizas[activeTab]?.processActive : undefined
+  const activeAmbiente = ambientes.find(a => a.id === activeTab)
+  const processActive = activeAmbiente
+    ? Object.values(balizas).find(b => b.label === activeAmbiente.label)?.processActive
+    : undefined
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden pt-4">

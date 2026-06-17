@@ -19,6 +19,7 @@ export const DataButton = memo(({
   id, sensorId, valor, habilitado, orientation, unidad, onToggle,
 }: DataButtonProps) => {
   const outOfRangeStyle = habilitado && !isInNormalRange(valor, id) && id.substring(0, 1) !== 'A'
+  console.log(sensorId)
 
   const isInAnActiveProcess = sensorId !== undefined && sensorId !== null
 
