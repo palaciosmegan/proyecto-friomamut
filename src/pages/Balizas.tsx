@@ -85,7 +85,7 @@ export function Balizas() {
                     <p className='text-s tracking-wider'> {b.processActive ? 'PROCESO ACTIVO' : 'SIN PROCESO ACTIVO'}</p>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="grid grid-cols-[20%_auto_3fr_auto] items-center justify-between gap-2">
                     <span className="text-xs text-[var(--color-text-secondary)]">INT</span>
                     <NumberInput
                       id={`baliza-${b.id}-int`}
@@ -95,7 +95,7 @@ export function Balizas() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="grid grid-cols-[20%_auto_3fr_auto] items-center justify-between gap-2">
                     <span className="text-xs text-[var(--color-text-secondary)]">EXT</span>
                     <NumberInput
                       id={`baliza-${b.id}-ext`}

@@ -27,7 +27,7 @@ export const NumberInput = ({ id, value, step = 0.1, unit, onChange }: NumberInp
           value={value.toFixed(decimals)}
           onChange={() => {}}
           disabled
-          className="self-center w-11 text-center bg-transparent outline-none text-sm font-mono text-[var(--color-text-primary)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-[var(--color-text-secondary)]"
+          className="w-11 text-center bg-transparent outline-none text-sm font-mono text-[var(--color-text-primary)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-[var(--color-text-secondary)]"
         />
         {unit && <span className="text-sm font-mono select-none text-[var(--color-text-secondary)] mr-1">{unit}</span>}
       </div>
