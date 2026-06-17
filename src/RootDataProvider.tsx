@@ -5,6 +5,7 @@ import { obtenerOffsets, type CalibratorOffsetMap } from './api/calibrador.api'
 import type { Ambiente } from './config/ambientes.config'
 import { RootDataContext } from './RootDataContext'
 import type { Sensor } from './types/sensor.types'
+// import { obtenerBalizas, type ApiBaliza, type Semaforo } from './api/api.balizas'
 
 export function RootDataProvider({ children }: { children: React.ReactNode }) {
   const [ambientes, setAmbientes] = useState<Ambiente[]>([])
@@ -12,6 +13,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
   const [loaded, setLoaded] = useState(false)
   const [sensoresMap, setSensoresMap] = useState<Record<number, Sensor[]>>({})
   const [offsetsMap, setOffsetsMap] = useState<CalibratorOffsetMap>({})
+  // const [balizas, setBalizas] = useState<ApiBaliza[]>([])
 
   useEffect(() => {
     obtenerAmbientes()
@@ -57,6 +59,12 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       .catch(error => console.error('[API offsets] Fallo al cargar offsets:', error))
   }, [])
 
+  // useEffect(() => {
+  //   obtenerBalizas()
+  //     .then(data => setBalizas(prev => ({...prev, data})))
+  //     .catch(error => console.error('[API balizas] Fallo al cargar balizas:', error))
+  // })
+
   const updateSensorHabilitado = useCallback((ambienteId: number, sensorId: string, habilitado: boolean) => {
     setSensoresMap(prev => ({
       ...prev,
@@ -76,6 +84,17 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
+  // const updateBalizas = useCallback((id: number, int: number | null, ext: number | null, status: Semaforo | null) => {
+  //   setBalizas(prev => ({
+  //     ...prev,
+  //     [id]: {
+  //       int: int ?? prev[id]?.int ?? null,
+  //       ext: ext ?? prev[id]?.ext ?? null,
+  //       status: status ?? prev[id]?.status ?? null,
+  //     }
+  //   }))
+  // }, [])
+
   const refreshSensores = useCallback((ambienteId: number) => {
     obtenerSensores(ambienteId)
       .then(data => setSensoresMap(prev => ({ ...prev, [ambienteId]: data })))
@@ -93,6 +112,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       offsetsMap,
       updateOffset,
       refreshSensores,
+      // balizas,
     }}>
       {children}
     </RootDataContext.Provider>
