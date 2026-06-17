@@ -86,7 +86,7 @@ export function Balizas() {
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-[var(--color-text-secondary)]">Input A</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">INT</span>
                     <NumberInput
                       id={`baliza-${b.id}-int`}
                       value={int}
@@ -96,7 +96,7 @@ export function Balizas() {
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-[var(--color-text-secondary)]">Input B</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">EXT</span>
                     <NumberInput
                       id={`baliza-${b.id}-ext`}
                       value={ext}
