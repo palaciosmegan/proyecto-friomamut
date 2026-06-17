@@ -42,7 +42,7 @@ function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: 
 }
 
 export function Balizas() {
-  const { ambientes, activeTab, setActiveTab, balizas } = useRootData()
+  const { ambientes, activeTab, setActiveTab, balizas, refreshBalizas } = useRootData()
   const [pending, setPending] = useState<Record<number, PendingBaliza>>({})
 
   const getPending = (id: number): PendingBaliza =>
@@ -55,7 +55,17 @@ export function Balizas() {
     }))
   }, [])
 
-  // const onlyUpdateLight = () =>
+  const handleSemaforoChange = useCallback(async (b: { id: number; int: number | null; ext: number | null }, s: SemaforoStatus) => {
+    updatePending(b.id, { status: s })
+    await actualizarBaliza({ id: b.id, int: b.int, ext: b.ext, status: s === 'none' ? null : s })
+    refreshBalizas()
+  }, [refreshBalizas, updatePending])
+
+  const handleGuardar = useCallback(async (id: number, int: number, ext: number, status: SemaforoStatus) => {
+    await actualizarBaliza({ id, int, ext, status: status === 'none' ? null : status })
+    setPending(prev => { const next = { ...prev }; delete next[id]; return next })
+    refreshBalizas()
+  }, [refreshBalizas])
 
   return (
     <div className="flex flex-col h-dvh">
@@ -76,15 +86,7 @@ export function Balizas() {
               >
                 <Semaforo
                   status={status}
-                  onChange={s => {
-                    updatePending(b.id, { status: s })
-                    actualizarBaliza({
-                      id: b.id,
-                      int,
-                      ext,
-                      status: s === 'none' ? null : s,
-                    })
-                  }}
+                  onChange={s => handleSemaforoChange({ id: b.id, int: b.int, ext: b.ext }, s)}
                 />
 
                 <div className="flex flex-col gap-4 flex-1">
@@ -119,12 +121,7 @@ export function Balizas() {
                     type="button"
                     disabled={!int}
                     className="btn btn-primary w-full mt-auto"
-                    onClick={() => actualizarBaliza({
-                      id: b.id,
-                      int,
-                      ext,
-                      status: status === 'none' ? null : status,
-                    })}
+                    onClick={() => handleGuardar(b.id, int, ext, status)}
                   >
                     Guardar
                   </button>

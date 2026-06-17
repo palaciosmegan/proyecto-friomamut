@@ -106,6 +106,12 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       .catch(error => console.error(`[API sensores] Fallo al refrescar tunel ${ambienteId}:`, error))
   }, [])
 
+  const refreshBalizas = useCallback(() => {
+    obtenerBalizas()
+      .then(data => setBalizas(Object.fromEntries(data.map(b => [b.id, b]))))
+      .catch(error => console.error('[API balizas] Fallo al cargar balizas:', error))
+  }, [])
+
   return (
     <RootDataContext.Provider value={{
       ambientes,
@@ -119,6 +125,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       refreshSensores,
       balizas,
       updateBalizas,
+      refreshBalizas,
     }}>
       {children}
     </RootDataContext.Provider>

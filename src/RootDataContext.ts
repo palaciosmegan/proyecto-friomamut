@@ -16,6 +16,7 @@ export type RootDataContextType = {
   refreshSensores: (ambienteId: number) => void,
   balizas: Record<number, ApiBaliza>
   updateBalizas: (id: number, int: number | null, ext: number | null, status: Semaforo | null) => void
+  refreshBalizas: () => void,
 }
 
 export const RootDataContext = createContext<RootDataContextType | null>(null)
