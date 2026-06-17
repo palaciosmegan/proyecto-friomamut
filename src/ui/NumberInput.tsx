@@ -13,12 +13,12 @@ export const NumberInput = ({ id, value, step = 0.1, unit, onChange }: NumberInp
     <>
       <button
         type="button"
-        className="items-center gap-0 bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-2 py-1 transition-all focus-within:shadow-[0_0_0_3px_rgba(33,150,243,0.25),var(--glow-blue)]"
+        className="bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-3 py-2 text-base font-bold leading-none active:scale-95 transition-all select-none"
         onClick={() => onChange(parseFloat((value - step).toFixed(decimals)))}
       >
         -
       </button>
-      <div className="items-center justify-self-center gap-0 py-1 transition-all focus-within:shadow-[0_0_0_3px_rgba(33,150,243,0.25),var(--glow-blue)]">
+      <div className="flex items-center justify-center py-1">
         <input
           id={id}
           type="text"
@@ -33,7 +33,7 @@ export const NumberInput = ({ id, value, step = 0.1, unit, onChange }: NumberInp
       </div>
       <button
         type="button"
-        className="items-center gap-0 bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-2 py-1 transition-all focus-within:shadow-[0_0_0_3px_rgba(33,150,243,0.25),var(--glow-blue)]"
+        className="bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-3 py-2 text-base font-bold leading-none active:scale-95 transition-all select-none"
         onClick={() => onChange(parseFloat((value + step).toFixed(decimals)))}
       >
         +

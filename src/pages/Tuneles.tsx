@@ -198,7 +198,7 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
             ].map(({ label, row }, i) => (
               <div
                 key={`orientation-label-${i}`}
-                className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
+                className="2xl:hidden short:block text-xs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
                 style={{ gridRow: row, gridColumn: imageVariant === 'G' ? 11 : 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
               >
                 {label}
@@ -216,9 +216,7 @@ export function Tuneles() {
   const { ambientes, activeTab, setActiveTab, loaded } = useRootData()
 
   return (
-    <div className="flex flex-col h-dvh overflow-hidden">
-      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
-
+    <div className="flex flex-col h-dvh overflow-hidden pt-4">
       <main className="flex-1 overflow-hidden pb-[30px] relative">
         {loaded && ambientes.length === 0 ? (
           <Message text="Sin tuneles configurados" />
@@ -231,6 +229,7 @@ export function Tuneles() {
           </div>
         ))}
       </main>
+      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
     </div>
   )
 }

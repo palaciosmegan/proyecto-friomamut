@@ -68,9 +68,7 @@ export function Balizas() {
   }, [refreshBalizas])
 
   return (
-    <div className="flex flex-col h-dvh">
-      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} hideTabs />
-
+    <div className="flex flex-col h-dvh overflow-hidden pt-4">
       <main className="flex-1 pb-[30px] overflow-y-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 p-6">
           {Object.values(balizas).map(b => {
@@ -131,6 +129,7 @@ export function Balizas() {
           })}
         </div>
       </main>
+      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} hideTabs />
     </div>
   )
 }

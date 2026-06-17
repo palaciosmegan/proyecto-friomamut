@@ -7,9 +7,7 @@ export function Calibradores() {
   const { ambientes, activeTab, setActiveTab } = useRootData()
   
   return (
-    <div className="flex flex-col h-dvh">
-      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
-
+    <div className="flex flex-col h-dvh pt-4">
 			<main className="flex-1 pb-[30px] relative">
 				{ambientes.map(a => (
 					<div
@@ -23,6 +21,8 @@ export function Calibradores() {
 					</div>
 				))}
 			</main>
+
+      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
     </div>
   )
 }
