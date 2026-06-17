@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react'
 import type { Ambiente } from './config/ambientes.config'
 import type { Sensor } from './types/sensor.types'
 import type { CalibratorOffsetMap } from './api/calibrador.api'
-// import type { ApiBaliza } from './api/api.balizas'
+import type { ApiBaliza, Semaforo } from './api/api.balizas'
 
 export type RootDataContextType = {
   ambientes: Ambiente[]
@@ -14,7 +14,8 @@ export type RootDataContextType = {
   offsetsMap: CalibratorOffsetMap,
   updateOffset: (ambienteId: number, sensorCodigo: string, nuevoOffset: number) => void,
   refreshSensores: (ambienteId: number) => void,
-  // balizas: ApiBaliza[]
+  balizas: Record<number, ApiBaliza>
+  updateBalizas: (id: number, int: number | null, ext: number | null, status: Semaforo | null) => void
 }
 
 export const RootDataContext = createContext<RootDataContextType | null>(null)
