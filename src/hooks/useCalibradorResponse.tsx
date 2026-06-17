@@ -15,11 +15,8 @@ export function useCalibradorResponse() {
         await fn();
         setResponse({ ok: true, message: "Guardado correctamente" });
       } catch (error) {
-        setResponse(
-          error instanceof Error
-            ? { ok: false, message: error.message }
-            : { ok: false, message: "Error, no se pudo guardar la calibración" },
-        );
+        const raw = error instanceof Error ? error.message : "Error, no se pudo guardar"
+        setResponse({ ok: false, message: raw.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() });
       }
       setToastKey(prev => prev + 1);
     },

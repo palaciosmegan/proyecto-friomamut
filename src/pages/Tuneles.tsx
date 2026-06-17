@@ -3,6 +3,7 @@ import { actualizarSensorActivo } from '../api/sensores.api'
 import type { Ambiente } from '../config/ambientes.config'
 import { useRootData } from '../RootDataContext'
 import type { Sensor } from '../types/sensor.types'
+import { Chip } from '../ui/Chip'
 import { DataButton } from '../ui/DataButton'
 import { Message } from '../ui/Message'
 import { Nav } from '../ui/Nav'
@@ -213,7 +214,8 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
 TunelesPanel.displayName = 'TunelesPanel'
 
 export function Tuneles() {
-  const { ambientes, activeTab, setActiveTab, loaded } = useRootData()
+  const { ambientes, activeTab, setActiveTab, loaded, balizas } = useRootData()
+  const processActive = activeTab !== null ? balizas[activeTab]?.processActive : undefined
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden pt-4">
@@ -228,6 +230,14 @@ export function Tuneles() {
             />
           </div>
         ))}
+        {activeTab !== null && (
+          <div className="absolute top-4 left-4 z-10">
+            <Chip
+              label={processActive ? 'Proceso activo' : 'Sin proceso activo'}
+              variant={processActive ? 'green' : 'gray'}
+            />
+          </div>
+        )}
       </main>
       <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
     </div>

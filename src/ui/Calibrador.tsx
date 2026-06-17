@@ -46,7 +46,10 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 	const handleOffsetChange = useCallback((codigoLectura: string, value: number) => {
 		setPendingChanges(prev => ({
 			...prev,
-			[codigoLectura]: { ...prev[codigoLectura], offset: value },
+			[codigoLectura]: {
+				visibilidad: prev[codigoLectura]?.visibilidad ?? true,
+				offset: value,
+			},
 		}))
 	}, [])
 

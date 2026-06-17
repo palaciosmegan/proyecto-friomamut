@@ -44,12 +44,12 @@ export const DataButton = memo(({
         id.substring(0, 1) === "A" && 'w-fit!'
       )}
     >
-      <span className='flex items-start'>
+      <span className='flex items-start gap-[2px]'>
         {habilitado && isInNormalRange(valor, id) && (
-          <IconDot className="text-green-400 animate-pulse" />
+          <IconDot className="text-green-400 animate-pulse mt-[1px]" />
         )}
         {outOfRangeStyle && (
-          <IconDot className="text-[#8b1e1e]" />
+          <IconDot className="text-[#8b1e1e] mt-[1px]" />
         )}
         <p className={clsx(
           'text-s sm:text-[0.6rem] lg:text-xs align-baseline leading-none font-semibold mb-1',
@@ -65,7 +65,7 @@ export const DataButton = memo(({
       </span>
 
       {valor !== null && (isInNormalRange(valor, id) || id.substring(0, 1) == 'A') ? (
-        <div className="flex items-baseline gap-[2px]">
+        <div className="flex items-baseline gap-[4px]">
           <span className={clsx(
             'text-lg lg:text-2xl 2xl:text-3xl font-bold tabular-nums leading-none',
             habilitado ? 'text-white' : 'text-[#c7c7c7]'
