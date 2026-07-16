@@ -7,14 +7,9 @@ interface MessageProps {
 export const Message = ({ text = 'Sin sensores configurados' }: MessageProps) => {
   return (
     <div className="absolute inset-x-0 top-[30vh] flex justify-center">
-      <div
-        className="glass-pill gap-3 px-6 py-3"
-        style={{ '--glow-r': '255', '--glow-g': '195', '--glow-b': '0' } as React.CSSProperties}
-      >
-        <IconWarning className="text-[rgba(255,210,80,0.85)]" />
-        <span className="text-sm font-semibold tracking-wide text-[rgba(255,230,140,0.9)]">
-          {text}
-        </span>
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold select-none shadow-sm border bg-amber-50 border-amber-500/40 text-amber-600">
+        <IconWarning />
+        {text}
       </div>
     </div>
   )

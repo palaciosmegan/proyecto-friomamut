@@ -41,9 +41,9 @@ export const Toast = ({ message, variant, callback }: ToastProps) => {
 			variant === 'error'   && "bg-red-950/80 border-red-600/50 shadow-[0_0_20px_rgba(166,0,0,0.25)]",
 			variant === 'neutral' && "bg-gray-900/80 border-white/10",
 		)}>
-			<div className="flex items-center gap-3 px-4 py-3">
+			<div className="flex items-center gap-3 pl-5 pr-4 py-3">
 				<span className={clsx(
-					"text-sm font-medium",
+					"text-sm font-bold",
 					variant === 'success' && "text-green-300",
 					variant === 'error'   && "text-red-300",
 					variant === 'neutral' && "text-white/70",
