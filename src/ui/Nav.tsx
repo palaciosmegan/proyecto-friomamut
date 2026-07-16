@@ -13,7 +13,7 @@ export const Nav = ({ TABS, activeId, onSelect, hideTabs }: NavProps) => {
 	const { pathname } = useLocation()
 	const navigate = useNavigate()
 	return (
-		<header className="w-full mb-[20px]">
+		<header className="w-full my-[20px]">
 			<nav className="grid grid-flow-col grid-cols-[1fr_auto_1fr] items-center">
 				<div className="spacer"></div>
 				{hideTabs ?
