@@ -7,14 +7,14 @@ interface ChipProps {
 
 export const Chip = ({ label, variant = 'gray' }: ChipProps) => (
   <span className={clsx(
-    'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide select-none',
-    variant === 'green' && 'bg-green-950/70 border border-green-600/40 text-green-300',
-    variant === 'gray'  && 'bg-gray-400 border border-gray-500 text-gray-600',
+    'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold select-none shadow-md border',
+    variant === 'green' && 'bg-green-50 border-green-600/60 text-green-700',
+    variant === 'gray'  && 'bg-gray-100 border-gray-500/70 text-gray-600',
   )}>
     <span className={clsx(
-      'w-1.5 h-1.5 rounded-full',
-      variant === 'green' && 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)]',
-      variant === 'gray'  && 'bg-gray-600',
+      'w-2.5 h-2.5 rounded-full',
+      variant === 'green' && 'bg-green-500',
+      variant === 'gray'  && 'bg-gray-500',
     )} />
     {label}
   </span>
