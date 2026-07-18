@@ -30,8 +30,8 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
   }
 
   return (
-    <div className="flex-1 min-h-0 min-w-0 h-full overflow-y-auto">
-      <table className="border-collapse w-full h-full margin-auto">
+    <div className="flex flex-1 min-h-0 min-w-0 h-full justify-center overflow-y-auto">
+      <table className="border-collapse w-fit h-full">
         <thead>
           <tr className="border-b border-[var(--color-border-default)]">
             {['', 'Descripción', 'Corrección', 'Temperatura', 'Auto'].map(col => (
@@ -58,13 +58,15 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
                       {getDisplayName(sensor)}
                     </label>
                   </td>
-                  <td className="flex justify-center py-1 short:py-0.5 gap-2">
-                    <NumberInput
-                      id={sensor.id}
-                      value={change.offset}
-                      unit={unidad}
-                      onChange={val => onOffsetChange?.(sensor.codigoLectura, val)}
-                    />
+                  <td className="py-1 short:py-0.5 align-middle">
+                    <div className="flex justify-center items-center gap-2">
+                      <NumberInput
+                        id={sensor.id}
+                        value={change.offset}
+                        unit={unidad}
+                        onChange={val => onOffsetChange?.(sensor.codigoLectura, val)}
+                      />
+                    </div>
                   </td>
                   <td className="text-center py-1 short:py-0.5 px-3 text-sm font-mono text-[var(--color-text-primary)] tabular-nums">
                     {sensor.valor != null ? sensor.valor.toFixed(1) : '—'} {unidad}
