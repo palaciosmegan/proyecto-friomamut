@@ -3,15 +3,18 @@ import { actualizarSensorActivo } from '../api/sensores.api'
 import type { Ambiente } from '../config/ambientes.config'
 import { useRootData } from '../RootDataContext'
 import type { Sensor } from '../types/sensor.types'
+import { Chip } from '../ui/Chip'
 import { DataButton } from '../ui/DataButton'
 import { Message } from '../ui/Message'
 import { Nav } from '../ui/Nav'
+import { Toast } from '../ui/Toast'
+import { useCalibradorResponse } from '../hooks/useCalibradorResponse'
 import _imagenes from '../assets/imagenes_ambientes.json'
 
 type ImagenAmbiente = { nombre: string; variante: string; imagen: string }
 const imagenes = _imagenes as ImagenAmbiente[]
 
-const MIN_HEIGHT_VW = '43vw'
+// const MIN_HEIGHT_VW = '43vw'
 
 const DEFAULT_POSICIONES: Record<number, string> = {
   1: "5/9",
@@ -54,43 +57,27 @@ const DEFAULT_POSICIONES: Record<number, string> = {
 };
 
 const G_POSICIONES: Record<number, string> = {
-  1: "5/10",
-  2: "6/10",
-  3: "5/9",
-  4: "6/9",
-  5: "5/8",
-  6: "6/8",
-  7: "5/7",
-  8: "6/7",
-  9: "5/5",
-  10: "6/5",
-  11: "5/4",
-  12: "6/4",
-  13: "5/3",
-  14: "6/3",
-  15: "5/2",
-  16: "6/2",
-  17: "3/10",
-  18: "2/10",
-  19: "3/9",
-  20: "2/9",
-  21: "3/8",
-  22: "2/8",
-  23: "3/7",
-  24: "2/7",
-  25: "3/5",
-  26: "2/5",
-  27: "3/4",
-  28: "2/4",
-  29: "3/3",
-  30: "2/3",
-  31: "3/2",
-  32: "2/2",
-  101: "4/10",
-  102: "4/2",
-  103: "4/4",
-  104: "4/8",
-  105: "4/6",
+  1: "6/2 / span 2",
+  2: "5/2 / span 2",
+  3: "6/4 / span 2",
+  4: "5/4 / span 2",
+  5: "6/6 / span 2",
+  6: "5/6 / span 2",
+  7: "6/8 / span 2",
+  8: "5/8 / span 2",
+  9: "3/2 / span 2",
+  10: "2/2 / span 2",
+  11: "3/4 / span 2",
+  12: "2/4 / span 2",
+  13: "3/6 / span 2",
+  14: "2/6 / span 2",
+  15: "3/8 / span 2",
+  16: "2/8 / span 2",
+  101: "4/9 / span 2",
+  102: "4/1 / span 2",
+  103: "4/3 / span 2",
+  104: "4/7 / span 2",
+  105: "4/5 / span 2",
 };
 
 const GRID_CONFIG: Record<string, { columns: string; rows: string; posiciones: Record<number, string> }> = {
@@ -100,13 +87,15 @@ const GRID_CONFIG: Record<string, { columns: string; rows: string; posiciones: R
   D: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
   E: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
   F: { columns: '3.3fr repeat(8, 1fr) 2.7fr', rows: 'repeat(7, 1fr)', posiciones: DEFAULT_POSICIONES },
-  G: { columns: 'repeat(5, 1fr) 4rem repeat(5, 1fr)', rows: '1.5fr 1fr 1fr 3fr 1fr 1fr 1.5fr', posiciones: G_POSICIONES },
+  G: { columns: '1.2fr repeat(8, 1fr) 1.35fr', rows: '1fr 1fr 1fr 2.2fr 1fr 1fr 1fr', posiciones: G_POSICIONES },
 }
 
 function getGridPos(posicion: number, posiciones: Record<number, string>) {
   const area = posiciones[posicion]
   if (!area) return {}
-  const [row, col] = area.split('/')
+  const slash = area.indexOf('/')
+  const row = area.slice(0, slash)
+  const col = area.slice(slash + 1)
   const alignTop = (posicion <= 16 && posicion % 2 === 0) || (posicion > 16 && posicion % 2 !== 0)
   return {
     gridRow: row,
@@ -149,41 +138,46 @@ interface TunelesPanelProps {
 const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
   const { sensoresMap, updateSensorHabilitado } = useRootData()
   const sensores = useMemo(() => sensoresMap[ambiente.id] ?? [], [sensoresMap, ambiente.id])
+  const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
   const handleToggle = useCallback((sensorId: string) => {
     const sensor = sensores.find(s => s.id === sensorId)
     if (!sensor || sensor.registroAmbienteEstructura === undefined || sensor.registroSensor === undefined) return
     const nuevoEstado = !sensor.habilitado
     updateSensorHabilitado(ambiente.id, sensorId, nuevoEstado)
-    actualizarSensorActivo(sensor.registroAmbienteEstructura, sensor.registroSensor, nuevoEstado).catch(error => {
-      console.error(`[API sensores] Fallo al actualizar ${sensor.id}:`, error)
-      updateSensorHabilitado(ambiente.id, sensorId, !nuevoEstado)
-    })
-  }, [sensores, ambiente.id, updateSensorHabilitado])
+    wrapFunction(async () => {
+      await actualizarSensorActivo(sensor.registroAmbienteEstructura!, sensor.registroSensor!, nuevoEstado)
+    }).catch(() => updateSensorHabilitado(ambiente.id, sensorId, !nuevoEstado))
+  }, [sensores, ambiente.id, updateSensorHabilitado, wrapFunction])
 
   const sensoresLoaded = ambiente.id in sensoresMap
-
+  
   return (
     <div className="relative w-full h-full">
-      <img
-        src={imagenes.find((imagen) => imagen.variante === imageVariant)?.imagen}
-        alt={imagenes.find((imagen) => imagen.variante === imageVariant)?.nombre}
-        decoding='async'
-        className={`rotate-180 w-full max-h-full object-fill`}
-        style={{ minHeight: MIN_HEIGHT_VW }}
-      />
+      {response !== null && (
+        <Toast key={toastKey} message={response.message} variant={response.ok ? 'success' : 'error'} callback={clearMessage} />
+      )}
+      <div
+        className="grid w-full h-full place-items-center items-stretch"
+        style={{
+          gridTemplateRows: GRID_CONFIG[imageVariant]?.rows,
+          gridTemplateColumns: GRID_CONFIG[imageVariant]?.columns,
+        }}
+      >
+        <img
+          src={imagenes.find((imagen) => imagen.variante === imageVariant)?.imagen}
+          alt={imagenes.find((imagen) => imagen.variante === imageVariant)?.nombre}
+          decoding='async'
+          className='rotate-180 w-full h-full object-fill -z-1'
+          style={{ gridRow: '1 / -1', gridColumn: '1 / -1' }}
+        />
 
-      {sensoresLoaded && sensores.length === 0 ? (
-        <Message />
-      ) : (
-        <div className="absolute inset-x-0 top-0" style={{ height: '43vw' }}>
-          <div
-            className="grid h-full place-items-center items-stretch"
-            style={{
-              gridTemplateRows: GRID_CONFIG[imageVariant]?.rows,
-              gridTemplateColumns: GRID_CONFIG[imageVariant]?.columns,
-            }}
-          >
+        {sensoresLoaded && sensores.length === 0 ? (
+          <div className="place-self-center" style={{ gridRow: '1 / -1', gridColumn: '1 / -1' }}>
+            <Message />
+          </div>
+        ) : (
+          <>
             {sensores.map(s => (
               <div key={s.id} style={getGridPos(s.posicion, GRID_CONFIG[imageVariant]?.posiciones ?? DEFAULT_POSICIONES)}>
                 <SensorPin sensor={s} onToggle={handleToggle} />
@@ -198,27 +192,29 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
             ].map(({ label, row }, i) => (
               <div
                 key={`orientation-label-${i}`}
-                className="lg:hidden short:block text-xxs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
-                style={{ gridRow: row, gridColumn: imageVariant === 'G' ? 11 : 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
+                className="2xl:hidden short:block text-xs font-semibold text-white bg-[var(--color-deep)] border border-white/10 rounded px-1.5 py-0.5"
+                style={{ gridRow: row, gridColumn: 10, alignSelf: 'center', justifySelf: 'start', marginLeft: '0.35rem' }}
               >
                 {label}
               </div>
             ))}
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
   )
 })
 TunelesPanel.displayName = 'TunelesPanel'
 
 export function Tuneles() {
-  const { ambientes, activeTab, setActiveTab, loaded } = useRootData()
+  const { ambientes, activeTab, setActiveTab, loaded, balizas } = useRootData()
+  const activeAmbiente = ambientes.find(a => a.id === activeTab)
+  const processActive = activeAmbiente
+    ? Object.values(balizas).find(b => b.label === activeAmbiente.label)?.processActive
+    : undefined
 
   return (
-    <div className="flex flex-col h-dvh overflow-hidden">
-      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
-
+    <div className="flex flex-col h-dvh overflow-hidden pt-4">
       <main className="flex-1 overflow-hidden pb-[30px] relative">
         {loaded && ambientes.length === 0 ? (
           <Message text="Sin tuneles configurados" />
@@ -230,7 +226,16 @@ export function Tuneles() {
             />
           </div>
         ))}
+        {activeTab !== null && (
+          <div className="absolute top-4 left-4 z-10">
+            <Chip
+              label={processActive ? 'Proceso activo' : 'Sin proceso activo'}
+              variant={processActive ? 'green' : 'gray'}
+            />
+          </div>
+        )}
       </main>
+      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
     </div>
   )
 }

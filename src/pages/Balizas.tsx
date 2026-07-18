@@ -1,14 +1,24 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRootData } from '../RootDataContext'
 import { Nav } from '../ui/Nav'
 import { NumberInput } from '../ui/NumberInput'
+import { actualizarBaliza } from '../api/api.balizas'
+import type { Semaforo } from '../api/api.balizas'
+import { useCalibradorResponse } from '../hooks/useCalibradorResponse'
+import { Toast } from '../ui/Toast'
 
-type SemaforoStatus = 'red' | 'yellow' | 'green' | 'none'
+type SemaforoStatus = Semaforo | 'none'
+
+type PendingBaliza = {
+  int: number | null
+  ext: number | null
+  status: SemaforoStatus | null
+}
 
 const LIGHTS: { key: SemaforoStatus; color: string; shadow: string }[] = [
-  { key: 'red', color: '#ef4444', shadow: '0 0 10px 2px #ef444488' },
-  { key: 'yellow', color: '#eab308', shadow: '0 0 10px 2px #eab30888' },
-  { key: 'green', color: '#22c55e', shadow: '0 0 10px 2px #22c55e88' },
+  { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488' },
+  { key: 'ambar', color: '#eab308', shadow: '0 0 10px 2px #eab30888' },
+  { key: 'verde', color: '#22c55e', shadow: '0 0 10px 2px #22c55e88' },
 ]
 
 function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: SemaforoStatus) => void }) {
@@ -34,69 +44,113 @@ function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: 
 }
 
 export function Balizas() {
-  const { ambientes, activeTab, setActiveTab } = useRootData()
-  const [valueA, setValueA] = useState<Record<number, number>>({})
-  const [valueB, setValueB] = useState<Record<number, number>>({})
-  const [statuses, setStatuses] = useState<Record<number, SemaforoStatus>>({})
+  const { ambientes, activeTab, setActiveTab, balizas, updateBalizas, refreshBalizas } = useRootData()
+  const [pending, setPending] = useState<Record<number, PendingBaliza>>({})
 
-  const handleChangeA = (id: number, value: number) =>
-    setValueA(prev => ({ ...prev, [id]: value }))
+  const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
-  const handleChangeB = (id: number, value: number) =>
-    setValueB(prev => ({ ...prev, [id]: value }))
+  const getPending = (id: number): PendingBaliza =>
+    pending[id] ?? { int: null, ext: null, status: null }
+
+  const updatePending = useCallback((id: number, patch: Partial<PendingBaliza>) => {
+    setPending(prev => ({
+      ...prev,
+      [id]: { ...(prev[id] ?? { int: null, ext: null, status: null }), ...patch }
+    }))
+  }, [])
+
+  const handleSemaforoChange = useCallback(async (b: { id: number; int: number | null; ext: number | null }, s: SemaforoStatus) => {
+    wrapFunction(async () => {
+      updatePending(b.id, { status: s })
+      await actualizarBaliza({ id: b.id, int: b.int, ext: b.ext, status: s === 'none' ? null : s })
+      refreshBalizas()
+    })
+  }, [refreshBalizas, updatePending, wrapFunction])
+
+  const handleGuardar = useCallback(async (id: number, int: number, ext: number, status: SemaforoStatus) => {
+    const apiStatus = status === 'none' ? null : status
+
+    wrapFunction(async () => {
+      await actualizarBaliza({ id, int, ext, status: apiStatus })
+      updateBalizas(id, int, ext, apiStatus)
+      setPending(prev => { const next = { ...prev }; delete next[id]; return next })
+      refreshBalizas()
+    })
+  }, [refreshBalizas, updateBalizas, wrapFunction])
 
   return (
-    <div className="flex flex-col h-dvh">
-      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} hideTabs />
+    <>
+      <div className="flex flex-col h-dvh overflow-hidden pt-4">
+        <main className="flex-1 pb-[30px] overflow-y-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 p-6">
+            {Object.values(balizas).map(b => {
+              const p = getPending(b.id)
+              const status = (p.status ?? b.status ?? 'none') as SemaforoStatus
+              const int = p.int ?? b.int ?? 0
+              const ext = p.ext ?? b.ext ?? 0
 
-      <main className="flex-1 pb-[30px] overflow-y-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 p-6">
-          {ambientes.map(a => (
-            <div
-              key={a.id}
-              className="flex flex-row gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
-            >
-              <Semaforo
-                status={statuses[a.id] ?? 'none'}
-                onChange={s => setStatuses(prev => ({ ...prev, [a.id]: s }))}
-              />
-
-              <div className="flex flex-col gap-4 flex-1">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-blue-soft)]">
-                  {a.label}
-                </h3>
-
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-[var(--color-text-secondary)]">Input A</span>
-                  <NumberInput
-                    id={`baliza-${a.id}`}
-                    value={valueA[a.id] ?? 0}
-                    unit="°C"
-                    onChange={val => handleChangeA(a.id, val)}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-[var(--color-text-secondary)]">Input B</span>
-                  <NumberInput
-                    id={`baliza-${a.id}`}
-                    value={valueB[a.id] ?? 0}
-                    unit="°C"
-                    onChange={val => handleChangeB(a.id, val)}
-                  />
-                </div>
-                <button
-                  type="button"
-                  disabled={valueA[a.id] === undefined || valueA[a.id] === 0}
-                  className="btn btn-primary w-full mt-auto"
+              return (
+                <div
+                  key={b.id}
+                  className="flex flex-row gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
                 >
-                  Guardar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
-    </div>
+                  <Semaforo
+                    status={status}
+                    onChange={s => handleSemaforoChange({ id: b.id, int: b.int, ext: b.ext }, s)}
+                  />
+
+                  <div className="flex flex-col gap-4 flex-1">
+                    <div className='flex justify-between items-center'>
+                      <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-blue-soft)]">
+                        {b.label}
+                      </h3>
+                      <p className='text-s tracking-wider'> {b.processActive ? 'PROCESO ACTIVO' : 'SIN PROCESO ACTIVO'}</p>
+                    </div>
+
+                    <div className="grid grid-cols-[20%_auto_3fr_auto] items-center justify-between gap-2">
+                      <span className="text-xs text-[var(--color-text-secondary)]">INT</span>
+                      <NumberInput
+                        id={`baliza-${b.id}-int`}
+                        value={int}
+                        unit="°C"
+                        onChange={val => updatePending(b.id, { int: val })}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-[20%_auto_3fr_auto] items-center justify-between gap-2">
+                      <span className="text-xs text-[var(--color-text-secondary)]">EXT</span>
+                      <NumberInput
+                        id={`baliza-${b.id}-ext`}
+                        value={ext}
+                        unit="°C"
+                        onChange={val => updatePending(b.id, { ext: val })}
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={!int}
+                      className="btn btn-primary w-full mt-auto"
+                      onClick={() => handleGuardar(b.id, int, ext, status)}
+                    >
+                      Guardar
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </main>
+        <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} hideTabs />
+      </div>
+      {response !== null && (
+        <Toast
+          key={toastKey}
+          message={response.message}
+          variant={response.ok ? 'success' : 'error'}
+          callback={clearMessage}
+        />
+      )}
+    </>
   )
 }

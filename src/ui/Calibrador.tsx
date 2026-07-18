@@ -19,6 +19,8 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 	const [pendingChanges, setPendingChanges] = useState<Record<string, PendingChange>>({})
 	const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
+	const [showModal, setShowModal] = useState(false)
+
 	useEffect(() => {
 		const ambienteOffsets = offsetsMap[ambienteId] ?? {}
 		setPendingChanges(prev =>
@@ -46,7 +48,10 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 	const handleOffsetChange = useCallback((codigoLectura: string, value: number) => {
 		setPendingChanges(prev => ({
 			...prev,
-			[codigoLectura]: { ...prev[codigoLectura], offset: value },
+			[codigoLectura]: {
+				visibilidad: prev[codigoLectura]?.visibilidad ?? true,
+				offset: value,
+			},
 		}))
 	}, [])
 
@@ -77,10 +82,19 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 
 			refreshSensores(ambienteId)
 		})
+
+		setShowModal(false)
 	}, [sensores, pendingChanges, offsetsMap, ambienteId, updateOffset, refreshSensores, wrapFunction])
 
 	const left = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 100)
 	const right = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100)
+
+	const hasChanges = sensores.some(s => {
+		const savedOffset = offsetsMap[ambienteId]?.[s.codigoLectura] ?? 0
+		const pendingOffset = pendingChanges[s.codigoLectura]?.offset ?? 0
+		const pendingVis = pendingChanges[s.codigoLectura]?.visibilidad ?? true
+		return pendingOffset !== savedOffset || pendingVis !== true
+	})
 
 	return (
 		<>
@@ -108,12 +122,12 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 				<div className="flex gap-3 justify-end mt-6 mr-6">
 					<button
 						type="button"
-						onClick={handleGuardar}
+						onClick={() => setShowModal(true)}
 						className="btn btn-primary"
 					>
 						Guardar registro
 					</button>
-					<button type="button" onClick={handleReset} className="btn btn-secondary">
+					<button type="button" onClick={handleReset} className={hasChanges ? 'btn btn-primary' : 'btn btn-secondary'}>
 						Reset
 					</button>
 				</div>
@@ -125,6 +139,24 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 					variant={response.ok ? 'success' : 'error'}
 					callback={clearMessage}
 				/>
+			)}
+			{showModal && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+					<div className="flex flex-col gap-5 rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-abyss)] p-6 shadow-xl w-80">
+						<div className="flex flex-col gap-1">
+							<h4 className="text-base font-semibold text-[var(--color-text-primary)]">Guardar cambios</h4>
+							<p className="text-sm text-[var(--color-text-secondary)]">¿Confirmas que quieres guardar los cambios de calibración?</p>
+						</div>
+						<div className="flex gap-3 justify-end">
+							<button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary">
+								Cancelar
+							</button>
+							<button type="button" onClick={handleGuardar} className="btn btn-primary">
+								Confirmar
+							</button>
+						</div>
+					</div>
+				</div>
 			)}
 		</>
 	)
