@@ -123,11 +123,11 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 
 	return (
 		<>
-			<div className="xl:p-4">
+			<div className="flex h-full flex-col xl:p-4">
 				{sensores.length === 0 ? (
 					<Message />
 				) : (
-					<div className="flex flex-col hmi:flex-row gap-6 items-center">
+					<div className="flex flex-1 min-h-0 flex-col hmi:flex-row gap-3 short:gap-1.5 items-stretch">
 						<SensorTable
 							sensores={left}
 							pendingChanges={pendingChanges}
@@ -148,7 +148,7 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 						/>
 					</div>
 				)}
-				<div className="flex gap-3 justify-end mt-6 mr-6">
+				<div className="flex shrink-0 gap-3 justify-end mt-4 short:mt-1.5 mr-6">
 					<button
 						type="button"
 						onClick={() => setShowModal(true)}

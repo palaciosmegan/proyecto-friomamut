@@ -7,12 +7,12 @@ export function Calibradores() {
   const { ambientes, activeTab, setActiveTab } = useRootData()
   
   return (
-    <div className="flex flex-col h-dvh pt-4">
-			<main className="flex-1 pb-[30px] relative">
+    <div className="flex flex-col h-dvh overflow-hidden pt-4">
+			<main className="flex-1 min-h-0 overflow-hidden pb-[30px] relative">
 				{ambientes.map(a => (
 					<div
 						key={a.id}
-						className={clsx(a.id !== activeTab && 'hidden')}
+						className={clsx('h-full', a.id !== activeTab && 'hidden')}
 					>
 						<Calibrador
 							ambienteId={a.id}

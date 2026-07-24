@@ -13,12 +13,12 @@ export const NumberInput = ({ id, value, step = 0.1, unit, onChange }: NumberInp
     <>
       <button
         type="button"
-        className="bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-3 py-2 text-base font-bold leading-none active:scale-95 transition-all select-none"
+        className="bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-3 py-2 short:px-2 short:py-1 text-base short:text-sm font-bold leading-none active:scale-95 transition-all select-none"
         onClick={() => onChange(parseFloat((value - step).toFixed(decimals)))}
       >
         -
       </button>
-      <div className="flex items-center justify-center py-1">
+      <div className="flex items-center justify-center py-1 short:py-0">
         <input
           id={id}
           type="text"
@@ -33,7 +33,7 @@ export const NumberInput = ({ id, value, step = 0.1, unit, onChange }: NumberInp
       </div>
       <button
         type="button"
-        className="bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-3 py-2 text-base font-bold leading-none active:scale-95 transition-all select-none"
+        className="bg-[#0d3a6e] border border-[var(--color-blue-bright)] rounded px-3 py-2 short:px-2 short:py-1 text-base short:text-sm font-bold leading-none active:scale-95 transition-all select-none"
         onClick={() => onChange(parseFloat((value + step).toFixed(decimals)))}
       >
         +
