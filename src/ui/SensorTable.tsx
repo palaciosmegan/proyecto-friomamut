@@ -9,6 +9,8 @@ interface SensorTableProps {
   pendingChanges: Record<string, PendingChange>
   onOffsetChange?: (codigoLectura: string, value: number) => void
   onVisibilidadChange?: (codigoLectura: string) => void
+  autoCalibrated?: Set<string>
+  onAutocalibrar?: (codigoLectura: string, valor: number) => void
   unidad: string
 }
 
@@ -19,14 +21,14 @@ const getDisplayName = (sensor: Sensor) => {
   return 'S' + sensorName.split('S')[1].replace(/^0+(?!$)/, '') + ' - ' + orientationParsed[sensor.orientation]
 }
 
-export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onVisibilidadChange, unidad }: SensorTableProps) => {
+export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onVisibilidadChange, autoCalibrated, onAutocalibrar, unidad }: SensorTableProps) => {
   const getChange = (sensor: Sensor): PendingChange =>
     pendingChanges[sensor.codigoLectura] ?? { offset: 0, visibilidad: true }
 
   const autocalibrar = (sensor: Sensor) => {
     if (sensor.valor == null) return
-    const change = getChange(sensor)
-    onOffsetChange?.(sensor.codigoLectura, change.offset - sensor.valor)
+    // Autocalibrar siempre arroja el mismo valor, lee el offset guardado del endpoint, no el actualizado por numberinput
+    onAutocalibrar?.(sensor.codigoLectura, sensor.valor)
   }
 
   return (
@@ -76,6 +78,7 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
                       type="button"
                       onClick={() => autocalibrar(sensor)}
                       className="btn btn-primary px-2 py-1 text-[0.65rem] short:px-1.5 short:py-0.5 short:text-[0.55rem] tracking-wide uppercase"
+                      disabled={autoCalibrated?.has(sensor.codigoLectura)}
                     >
                       auto calibrar
                     </button>

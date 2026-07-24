@@ -17,6 +17,7 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 	const sensores = useMemo(() => sensoresMap[ambienteId] ?? [], [sensoresMap, ambienteId])
 
 	const [pendingChanges, setPendingChanges] = useState<Record<string, PendingChange>>({})
+	const [autoCalibrated, setAutoCalibrated] = useState<Set<string>>(new Set())
 	const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
 	const [showModal, setShowModal] = useState(false)
@@ -43,6 +44,7 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 				])
 			)
 		)
+		setAutoCalibrated(new Set())
 	}, [ambienteId, offsetsMap])
 
 	const handleOffsetChange = useCallback((codigoLectura: string, value: number) => {
@@ -53,7 +55,29 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 				offset: value,
 			},
 		}))
+		// A manual offset change re-enables that sensor's auto-calibrar button.
+		setAutoCalibrated(prev => {
+			if (!prev.has(codigoLectura)) return prev
+			const next = new Set(prev)
+			next.delete(codigoLectura)
+			return next
+		})
 	}, [])
+
+	const handleAutocalibrar = useCallback((codigoLectura: string, valor: number) => {
+		// Zero out the corrected reading using the SAVED offset (the one `valor`
+		// already reflects), not the pending one — so a pending number-input
+		// edit doesn't pile onto the auto-calibration.
+		const savedOffset = offsetsMap[ambienteId]?.[codigoLectura] ?? 0
+		setPendingChanges(prev => ({
+			...prev,
+			[codigoLectura]: {
+				visibilidad: prev[codigoLectura]?.visibilidad ?? true,
+				offset: savedOffset - valor,
+			},
+		}))
+		setAutoCalibrated(prev => new Set(prev).add(codigoLectura))
+	}, [offsetsMap, ambienteId])
 
 	const handleVisibilidadChange = useCallback((codigoLectura: string) => {
 		setPendingChanges(prev => ({
@@ -81,6 +105,7 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 			)
 
 			refreshSensores(ambienteId)
+			setAutoCalibrated(new Set())
 		})
 
 		setShowModal(false)
@@ -108,6 +133,8 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 							pendingChanges={pendingChanges}
 							onOffsetChange={handleOffsetChange}
 							onVisibilidadChange={handleVisibilidadChange}
+							autoCalibrated={autoCalibrated}
+							onAutocalibrar={handleAutocalibrar}
 							unidad="°C"
 						/>
 						<SensorTable
@@ -115,6 +142,8 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 							pendingChanges={pendingChanges}
 							onOffsetChange={handleOffsetChange}
 							onVisibilidadChange={handleVisibilidadChange}
+							autoCalibrated={autoCalibrated}
+							onAutocalibrar={handleAutocalibrar}
 							unidad="°C"
 						/>
 					</div>
