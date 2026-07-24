@@ -239,6 +239,10 @@
     background-attachment: fixed;
   }
 
+  #root {
+    overflow-x: clip;
+  }
+
   /* Noise texture */
   body::before {
     content: "";
