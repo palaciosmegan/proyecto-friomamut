@@ -54,6 +54,7 @@ const DEFAULT_POSICIONES: Record<number, string> = {
   103: "2/10",
   104: "2/1",
   105: "6/1",
+  106: "6/10"
 };
 
 const G_POSICIONES: Record<number, string> = {
@@ -151,7 +152,7 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
   }, [sensores, ambiente.id, updateSensorHabilitado, wrapFunction])
 
   const sensoresLoaded = ambiente.id in sensoresMap
-  
+
   return (
     <div className="relative w-full h-full">
       {response !== null && (
