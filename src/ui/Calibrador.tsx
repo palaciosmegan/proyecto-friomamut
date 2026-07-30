@@ -170,7 +170,7 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 				/>
 			)}
 			{showModal && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
 					<div className="flex flex-col gap-5 rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-abyss)] p-6 shadow-xl w-80">
 						<div className="flex flex-col gap-1">
 							<h4 className="text-base font-semibold text-[var(--color-text-primary)]">Guardar cambios</h4>

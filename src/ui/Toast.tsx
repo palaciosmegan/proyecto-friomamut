@@ -34,12 +34,12 @@ export const Toast = ({ message, variant, callback }: ToastProps) => {
 	return (
 		<div className={clsx(
 			"fixed top-8 right-6 z-50 flex flex-col overflow-hidden rounded-xl",
-			"border backdrop-blur-md transition-all duration-300",
+			"border transition-all duration-300",
 			"shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
 			visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3",
-			variant === 'success' && "bg-green-950/80 border-green-600/50 shadow-[0_0_20px_rgba(0,166,62,0.25)]",
-			variant === 'error'   && "bg-red-950/80 border-red-600/50 shadow-[0_0_20px_rgba(166,0,0,0.25)]",
-			variant === 'neutral' && "bg-gray-900/80 border-white/10",
+			variant === 'success' && "bg-green-950/95 border-green-600/50 shadow-[0_0_20px_rgba(0,166,62,0.25)]",
+			variant === 'error'   && "bg-red-950/95 border-red-600/50 shadow-[0_0_20px_rgba(166,0,0,0.25)]",
+			variant === 'neutral' && "bg-gray-900/95 border-white/10",
 		)}>
 			<div className="flex items-center gap-3 pl-5 pr-4 py-3">
 				<span className={clsx(

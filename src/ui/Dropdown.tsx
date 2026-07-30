@@ -113,7 +113,7 @@ export const Dropdown = ({ value, options, onChange, className }: DropdownProps)
         <ul
           ref={menuRef}
           role="listbox"
-          className="fixed z-[100] max-h-[60vh] overflow-auto rounded-xl border border-white/14 bg-[rgba(13,30,50,0.92)] backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+          className="fixed z-[100] max-h-[60vh] overflow-auto rounded-xl border border-white/14 bg-[rgba(13,30,50,0.98)] shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
           style={{ left: pos.left, top: pos.top, minWidth: pos.minWidth, visibility: pos.ready ? 'visible' : 'hidden' }}
         >
           {options.map(o => (

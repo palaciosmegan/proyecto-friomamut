@@ -29,8 +29,7 @@ export const Nav = ({ TABS, activeId, onSelect, hideTabs }: NavProps) => {
 					(
 						<div className="
 					flex items-center rounded-full px-1 py-1
-					backdrop-blur-[18px]
-					bg-[linear-gradient(135deg,rgba(13,58,110,0.55)_0%,rgba(0,96,100,0.45)_100%)]
+					bg-[linear-gradient(135deg,rgba(13,58,110,0.94)_0%,rgba(0,44,100,0.9)_100%)]
 					border border-white/14
 					shadow-[0_20px_60px_rgba(0,0,0,0.6),0_6px_20px_rgba(0,0,0,0.4),0_0_0_1px_rgba(94,231,223,0.2),inset_0_1px_0_rgba(255,255,255,0.28),0_0_40px_rgba(255,255,255,0.06),0_0_60px_rgba(94,231,223,0.12)]
 					">

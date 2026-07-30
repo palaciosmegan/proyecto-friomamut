@@ -655,7 +655,7 @@
   }
 
   /* --- Nav --- */
-  .nav {
+  /* .nav {
     position: sticky;
     top: 0;
     z-index: 100;
@@ -663,11 +663,9 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-4) var(--spacing-8);
-    background: rgba(6, 15, 30, 0.7);
-    backdrop-filter: blur(20px) saturate(1.5);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    background: rgba(6, 15, 30, 0.94);
     border-bottom: 1px solid var(--color-border-subtle);
-  }
+  } */
   .nav-link {
     font-size: var(--text-sm);
     font-weight: 400;
@@ -710,13 +708,11 @@
   }
 
   /* --- Glass --- */
-  .glass {
-    background: rgba(14, 30, 53, 0.5);
-    backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  /* .glass {
+    background: rgba(14, 30, 53, 0.9);
     border: 1px solid var(--color-border-default);
     border-radius: var(--radius-xl);
-  }
+  } */
 
   /* --- Dividers --- */
   hr,
