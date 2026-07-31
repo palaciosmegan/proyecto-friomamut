@@ -50,7 +50,7 @@ export const Toast = ({ message, variant, callback }: ToastProps) => {
 				)}>
 					{message}
 				</span>
-				<button type="button" onClick={onClose} className="text-white/30 hover:text-white/60 transition-colors text-base leading-none">
+				<button type="button" onClick={onClose} className="text-white/30 text-base leading-none">
 					✕
 				</button>
 			</div>

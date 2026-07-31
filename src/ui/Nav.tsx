@@ -53,7 +53,7 @@ export const Nav = ({ TABS, activeId, onSelect, hideTabs }: NavProps) => {
 											"relative z-10 transition-all duration-200 font-semibold",
 											activeId === id
 												? "text-[var(--color-text-primary)]"
-												: "text-[var(--color-text-muted)] font-medium hover:text-[var(--color-text-secondary)] hover:-translate-y-px",
+												: "text-[var(--color-text-muted)] font-medium",
 										)}
 									>
 										{label}

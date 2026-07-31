@@ -126,7 +126,7 @@ export const Dropdown = ({ value, options, onChange, className }: DropdownProps)
                 'cursor-pointer px-4 py-2 text-sm transition-colors',
                 o.value === value
                   ? 'bg-white/14 text-white font-semibold'
-                  : 'text-white/70 hover:bg-white/8 hover:text-white',
+                  : 'text-white/70',
               )}
             >
               {o.label}

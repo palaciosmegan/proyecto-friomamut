@@ -48,7 +48,7 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
             {sensores.map(sensor => {
               const change = getChange(sensor)
               return (
-                <tr key={sensor.id} className="border-separate border-spacing-2 border-[var(--color-border-subtle)] transition-colors hover:bg-[rgba(33,150,243,0.04)]">
+                <tr key={sensor.id} className="border-separate border-spacing-2 border-[var(--color-border-subtle)]">
                   <td className="px-3">
                     <Toggle
                       checked={change.visibilidad}
