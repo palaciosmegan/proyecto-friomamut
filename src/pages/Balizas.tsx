@@ -16,9 +16,9 @@ type PendingBaliza = {
 }
 
 const LIGHTS: { key: SemaforoStatus; color: string; shadow: string, instructivo: string }[] = [
-  { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488', instructivo: 'Se encenderá cuando el sensor INT llegó al objetivo' },
-  { key: 'ambar', color: '#eab308', shadow: '0 0 10px 2px #eab30888', instructivo: 'Se encenderá cuando el sensor EXT llegó al objetivo' },
-  { key: 'verde', color: '#22c55e', shadow: '0 0 10px 2px #22c55e88', instructivo: 'Se encenderá cuando el túnel tiene un proceso activo' },
+  { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488', instructivo: 'Sensor INT llegó al objetivo' },
+  { key: 'ambar', color: '#eab308', shadow: '0 0 10px 2px #eab30888', instructivo: 'Sensor EXT llegó al objetivo' },
+  { key: 'verde', color: '#22c55e', shadow: '0 0 10px 2px #22c55e88', instructivo: 'Túnel tiene proceso activo' },
 ]
 
 function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: SemaforoStatus) => void }) {
@@ -153,14 +153,14 @@ export function Balizas() {
           <div
             className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70">
             <div
-              className="flex flex-col gap-5 rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-abyss)] p-6 shadow-xl w-96">
+              className="flex flex-col gap-5 rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-abyss)] p-6 shadow-xl w-80">
               <div className="flex items-center justify-between">
                 <h4 className="text-base font-semibold text-[var(--color-text-primary)]">Instructivo</h4>
                 <button
                   type="button"
                   onClick={() => setInstructivoOpen(false)}
                   aria-label="Cerrar"
-                  className="flex items-center justify-center w-9 h-9 rounded-sm p-2 bg-white/10 border border-[var(--color-border-default)] text-2xl leading-none text-[var(--color-text-secondary)] cursor-pointer"
+                  className="flex items-center justify-center w-9 h-9 rounded-sm p-5 bg-white/10 border border-[var(--color-border-default)] text-2xl leading-none text-[var(--color-text-secondary)] cursor-pointer"
                 >
                   ✕
                 </button>
