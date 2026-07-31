@@ -52,18 +52,18 @@ const DEFAULT_POSICIONES: Record<number, string> = {
   101: "4/10",
   102: "4/1",
   103: "2/10",
-  104: "6/10",
+  104: "2/1",
   105: "6/1",
-  106: "2/10"
+  106: "6/10"
 };
 
 const G_POSICIONES: Record<number, string> = {
   1: "5/2 / span 2",
   2: "6/2 / span 2",
-  3: "6/4 / span 2",
-  4: "5/4 / span 2",
-  5: "6/6 / span 2",
-  6: "5/6 / span 2",
+  3: "5/4 / span 2",
+  4: "6/4 / span 2",
+  5: "5/6 / span 2",
+  6: "6/6 / span 2",
   7: "5/8 / span 2",
   8: "6/8 / span 2",
   9: "3/2 / span 2",
@@ -92,18 +92,19 @@ const GRID_CONFIG: Record<string, { columns: string; rows: string; posiciones: R
   G: { columns: '1.2fr repeat(8, 1fr) 1.35fr', rows: '1fr 1fr 1fr 2.2fr 1fr 1fr 1fr', posiciones: G_POSICIONES },
 }
 
-function getGridPos(posicion: number, posiciones: Record<number, string>) {
+const getGridPos = (posicion: number, imageVariant: string) => {
+  const posiciones = GRID_CONFIG[imageVariant]?.posiciones ?? DEFAULT_POSICIONES
   const area = posiciones[posicion]
   if (!area) return {}
   const slash = area.indexOf('/')
   const row = area.slice(0, slash)
   const col = area.slice(slash + 1)
-  const alignTop = (posicion <= 16 && posicion % 2 === 0) || (posicion > 16 && posicion % 2 !== 0)
+  const alignTop = imageVariant === 'G' ? (posicion <= 8 && posicion % 2 === 0) || (posicion > 8 && posicion % 2 !== 0) : (posicion <= 16 && posicion % 2 === 0) || (posicion > 16 && posicion % 2 !== 0)
   return {
     gridRow: row,
     gridColumn: col,
     alignSelf: posicion > 100 ? 'center' : alignTop ? 'end' : 'start',
-    justifySelf: col === '10' && posicion === 106 ? 'start' : col === '10' && posicion === 103 ? 'end' : undefined,
+    justifySelf: imageVariant !== 'G' && (posicion === 103 || posicion === 106) ? 'center' : undefined,
   }
 }
 
@@ -182,11 +183,10 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
         ) : (
           <>
             {sensores.map(s => (
-              <div key={s.id} style={getGridPos(s.posicion, GRID_CONFIG[imageVariant]?.posiciones ?? DEFAULT_POSICIONES)}>
+              <div key={s.id} style={getGridPos(s.posicion, imageVariant)}>
                 <SensorPin sensor={s} onToggle={handleToggle} />
               </div>
             ))}
-
             {[
               { label: 'EXT', row: 2 },
               { label: 'INT', row: 3 },
