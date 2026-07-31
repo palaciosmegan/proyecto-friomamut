@@ -6,6 +6,7 @@ import type { Ambiente } from './config/ambientes.config'
 import { RootDataContext } from './RootDataContext'
 import type { Sensor } from './types/sensor.types'
 import { obtenerBalizas, type ApiBaliza, type Semaforo } from './api/api.balizas'
+import { obtenerProcesosAmbiente, type ApiProcesoAmbiente } from './api/api.procesos'
 
 export function RootDataProvider({ children }: { children: React.ReactNode }) {
   const [ambientes, setAmbientes] = useState<Ambiente[]>([])
@@ -14,6 +15,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
   const [sensoresMap, setSensoresMap] = useState<Record<number, Sensor[]>>({})
   const [offsetsMap, setOffsetsMap] = useState<CalibratorOffsetMap>({})
   const [balizas, setBalizas] = useState<Record<number, ApiBaliza>>({})
+  const [procesosAmbiente, setProcesosAmbiente] = useState<Record<number, ApiProcesoAmbiente>>({})
 
   useEffect(() => {
     obtenerAmbientes()
@@ -60,9 +62,25 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    obtenerBalizas()
-      .then(data => setBalizas(Object.fromEntries(data.map(b => [b.id, b]))))
-      .catch(error => console.error('[API balizas] Fallo al cargar balizas:', error))
+    const fetchBalizas = () => {
+      obtenerBalizas()
+        .then(data => setBalizas(Object.fromEntries(data.map(b => [b.id, b]))))
+        .catch(error => console.error('[API balizas] Fallo al cargar balizas:', error))
+    }
+    fetchBalizas()
+    const interval = setInterval(fetchBalizas, 5_000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const fetchProcesosAmbiente = () => {
+      obtenerProcesosAmbiente()
+        .then(data => setProcesosAmbiente(Object.fromEntries(data.map(p => [p.tunel, p]))))
+        .catch(error => console.error('[API procesos-ambiente] Fallo al cargar procesos-ambiente:', error))
+    }
+    fetchProcesosAmbiente()
+    const interval = setInterval(fetchProcesosAmbiente, 5_000)
+    return () => clearInterval(interval)
   }, [])
 
   const updateSensorHabilitado = useCallback((ambienteId: number, sensorId: string, habilitado: boolean) => {
@@ -126,6 +144,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       balizas,
       updateBalizas,
       refreshBalizas,
+      procesosAmbiente,
     }}>
       {children}
     </RootDataContext.Provider>

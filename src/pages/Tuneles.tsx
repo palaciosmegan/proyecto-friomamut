@@ -52,9 +52,9 @@ const DEFAULT_POSICIONES: Record<number, string> = {
   101: "4/10",
   102: "4/1",
   103: "2/10",
-  104: "2/1",
+  104: "6/10",
   105: "6/1",
-  106: "6/10"
+  106: "2/10"
 };
 
 const G_POSICIONES: Record<number, string> = {
@@ -76,9 +76,10 @@ const G_POSICIONES: Record<number, string> = {
   16: "2/8 / span 2",
   101: "4/9 / span 2",
   102: "4/1 / span 2",
-  103: "4/3 / span 2",
+  103: "4/4",
   104: "4/7 / span 2",
   105: "4/5 / span 2",
+  106: "4/3",
 };
 
 const GRID_CONFIG: Record<string, { columns: string; rows: string; posiciones: Record<number, string> }> = {
@@ -102,11 +103,12 @@ function getGridPos(posicion: number, posiciones: Record<number, string>) {
     gridRow: row,
     gridColumn: col,
     alignSelf: posicion > 100 ? 'center' : alignTop ? 'end' : 'start',
+    justifySelf: col === '10' && posicion === 106 ? 'start' : col === '10' && posicion === 103 ? 'end' : undefined,
   }
 }
 
 function getUnidad(sensorId: string) {
-  if (sensorId === 'A03' || sensorId === 'A04') return 'mmca'
+  if (sensorId === 'A03' || sensorId === 'A04' || sensorId === 'A06') return 'mmca'
   if (sensorId === 'A05') return 'm³/h'
   return '°C'
 }
@@ -208,11 +210,8 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
 TunelesPanel.displayName = 'TunelesPanel'
 
 export function Tuneles() {
-  const { ambientes, activeTab, setActiveTab, loaded, balizas } = useRootData()
-  const activeAmbiente = ambientes.find(a => a.id === activeTab)
-  const processActive = activeAmbiente
-    ? Object.values(balizas).find(b => b.label === activeAmbiente.label)?.processActive
-    : undefined
+  const { ambientes, activeTab, setActiveTab, loaded, procesosAmbiente } = useRootData()
+  const processActive = activeTab !== null ? procesosAmbiente[activeTab]?.tieneProceso : undefined
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden pt-4">

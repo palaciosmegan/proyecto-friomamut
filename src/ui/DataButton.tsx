@@ -55,7 +55,7 @@ export const DataButton = memo(({
           'text-s sm:text-[0.6rem] lg:text-xs align-baseline leading-none font-semibold mb-1',
           habilitado ? 'text-[#d7d7d7]' : 'text-[#c7c7c7]'
         )}>
-          {id === 'A01' ? 'AMBIENTE' : id === 'A02' ? 'RETORNO' : id === 'A03' ? 'P. PALET' : id === 'A04' ? 'P. VEN.' : id === 'A05' ? 'CAU' : (
+          {id === 'A01' ? 'AMBIENTE' : id === 'A02' ? 'RETORNO' : id === 'A03' ? 'P. PALET DER' : id === 'A04' ? 'P. VEN.' : id === 'A05' ? 'CAU' : id === 'A06' ? 'P. PALET IZQ' : (
             <>
               {id}
               <span className="hidden short:hidden 2xl:inline"> · {orientation}</span>

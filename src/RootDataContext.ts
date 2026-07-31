@@ -3,6 +3,7 @@ import type { Ambiente } from './config/ambientes.config'
 import type { Sensor } from './types/sensor.types'
 import type { CalibratorOffsetMap } from './api/calibrador.api'
 import type { ApiBaliza, Semaforo } from './api/api.balizas'
+import type { ApiProcesoAmbiente } from './api/api.procesos'
 
 export type RootDataContextType = {
   ambientes: Ambiente[]
@@ -17,6 +18,7 @@ export type RootDataContextType = {
   balizas: Record<number, ApiBaliza>
   updateBalizas: (id: number, int: number | null, ext: number | null, status: Semaforo | null) => void
   refreshBalizas: () => void,
+  procesosAmbiente: Record<number, ApiProcesoAmbiente>
 }
 
 export const RootDataContext = createContext<RootDataContextType | null>(null)

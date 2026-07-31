@@ -44,7 +44,7 @@ function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: 
 }
 
 export function Balizas() {
-  const { ambientes, activeTab, setActiveTab, balizas, updateBalizas, refreshBalizas } = useRootData()
+  const { ambientes, activeTab, setActiveTab, balizas, updateBalizas, refreshBalizas, procesosAmbiente } = useRootData()
   const [pending, setPending] = useState<Record<number, PendingBaliza>>({})
   const [instructivoOpen, setInstructivoOpen] = useState(false)
 
@@ -105,7 +105,7 @@ export function Balizas() {
                       <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-blue-soft)]">
                         {b.label}
                       </h3>
-                      <p className='text-s tracking-wider'> {b.processActive ? 'PROCESO ACTIVO' : 'SIN PROCESO ACTIVO'}</p>
+                      <p className='text-s tracking-wider'> {procesosAmbiente[b.id]?.tieneProceso ? 'PROCESO ACTIVO' : 'SIN PROCESO ACTIVO'}</p>
                     </div>
 
                     <div className="grid grid-cols-[20%_auto_3fr_auto] items-center justify-between gap-2">
