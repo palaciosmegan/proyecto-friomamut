@@ -58,14 +58,14 @@ const DEFAULT_POSICIONES: Record<number, string> = {
 };
 
 const G_POSICIONES: Record<number, string> = {
-  1: "6/2 / span 2",
-  2: "5/2 / span 2",
+  1: "5/2 / span 2",
+  2: "6/2 / span 2",
   3: "6/4 / span 2",
   4: "5/4 / span 2",
   5: "6/6 / span 2",
   6: "5/6 / span 2",
-  7: "6/8 / span 2",
-  8: "5/8 / span 2",
+  7: "5/8 / span 2",
+  8: "6/8 / span 2",
   9: "3/2 / span 2",
   10: "2/2 / span 2",
   11: "3/4 / span 2",
