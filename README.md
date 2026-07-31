@@ -1,3 +1,13 @@
+# Friomamut Proyecto HMI
+
+## Notas de desarrollo
+
+¿Cómo correr?
+yarn dev
+
+## ssh command
+ssh -L 1880:192.168.106.100:1880 root@100.124.202.27
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
