@@ -16,9 +16,9 @@ type PendingBaliza = {
 }
 
 const LIGHTS: { key: SemaforoStatus; color: string; shadow: string, instructivo: string }[] = [
-  { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488', instructivo: 'Encender cuando el sensor INT llegó al objetivo' },
-  { key: 'ambar', color: '#eab308', shadow: '0 0 10px 2px #eab30888', instructivo: 'Encender cuando el sensor EXT llegó al objetivo' },
-  { key: 'verde', color: '#22c55e', shadow: '0 0 10px 2px #22c55e88', instructivo: 'Encender cuando el túnel tiene un proceso activo' },
+  { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488', instructivo: 'Se encenderá cuando el sensor INT llegó al objetivo' },
+  { key: 'ambar', color: '#eab308', shadow: '0 0 10px 2px #eab30888', instructivo: 'Se encenderá cuando el sensor EXT llegó al objetivo' },
+  { key: 'verde', color: '#22c55e', shadow: '0 0 10px 2px #22c55e88', instructivo: 'Se encenderá cuando el túnel tiene un proceso activo' },
 ]
 
 function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: SemaforoStatus) => void }) {
