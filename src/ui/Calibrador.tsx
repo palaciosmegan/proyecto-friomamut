@@ -1,5 +1,5 @@
 import { memo, useMemo, useState, useEffect, useCallback } from 'react'
-import { Message } from './Message'
+import { StatusMessage } from './StatusMessage'
 import { useRootData } from '../RootDataContext'
 import { SensorTable } from './SensorTable'
 import { actualizarOffset } from '../api/calibrador.api'
@@ -13,7 +13,7 @@ interface CalibradorProps {
 }
 
 export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
-	const { sensoresMap, offsetsMap, updateOffset, refreshSensores } = useRootData()
+	const { sensoresMap, sensoresLoaded, sensoresError, offsetsMap, updateOffset, refreshSensores } = useRootData()
 	const sensores = useMemo(() => sensoresMap[ambienteId] ?? [], [sensoresMap, ambienteId])
 
 	const [pendingChanges, setPendingChanges] = useState<Record<string, PendingChange>>({})
@@ -125,7 +125,15 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 		<>
 			<div className="flex h-full flex-col xl:p-4">
 				{sensores.length === 0 ? (
-					<Message />
+					<StatusMessage
+						loaded={sensoresLoaded[ambienteId] ?? false}
+						error={sensoresError[ambienteId] ?? null}
+						labels={{
+							fetch: 'No se pudo conectar con el servidor de sensores',
+							format: 'La respuesta de sensores tiene un formato inesperado',
+							empty: 'Sin sensores configurados',
+						}}
+					/>
 				) : (
 					<div className="flex flex-1 min-h-0 flex-col hmi:flex-row gap-3 short:gap-1.5 items-stretch">
 						<SensorTable

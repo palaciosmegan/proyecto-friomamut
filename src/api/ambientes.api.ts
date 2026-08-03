@@ -1,5 +1,6 @@
 import type { Ambiente } from '../config/ambientes.config'
 import { getApiUrl } from './api.config'
+import { ApiError } from './api.errors'
 
 const TUNELES_ENDPOINT = '/api/tuneles'
 
@@ -38,11 +39,12 @@ export async function obtenerAmbientes(): Promise<Ambiente[]> {
   try {
     data = await response.json()
   } catch (cause) {
-    throw new Error(`La API ${url} no devolvio JSON valido.`, { cause })
+    throw new ApiError('format', `La API ${url} no devolvio JSON valido.`, { cause })
   }
 
   if (!Array.isArray(data) || !data.every(isAmbiente)) {
-    throw new Error(
+    throw new ApiError(
+      'format',
       `La respuesta de ${url} no tiene el formato esperado [{ id: number, label: string }]. Recibido: ${JSON.stringify(data)}`,
     )
   }

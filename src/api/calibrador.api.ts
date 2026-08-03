@@ -1,4 +1,5 @@
 import { getApiUrl } from './api.config'
+import { ApiError } from './api.errors'
 
 // ── Tipos de la respuesta de la API ────────────────────────
 
@@ -44,13 +45,13 @@ export type ActualizarOffsetRequest = ActualizarOffsetDirecto | ActualizarOffset
 
 function normalizarOffsetMap(data: unknown): CalibratorOffsetMap {
   if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-    throw new Error('La respuesta de offsets no tiene la estructura esperada')
+    throw new ApiError('format', 'La respuesta de offsets no tiene la estructura esperada')
   }
 
   const response = data as ApiResponse
 
   if (!Array.isArray(response.ambientes)) {
-    throw new Error('La respuesta no contiene un array de ambientes')
+    throw new ApiError('format', 'La respuesta no contiene un array de ambientes')
   }
 
   const result: CalibratorOffsetMap = {}
@@ -59,11 +60,11 @@ function normalizarOffsetMap(data: unknown): CalibratorOffsetMap {
     const ambiente = amb as ApiAmbiente
 
     if (typeof ambiente.ambienteRegistro !== 'number') {
-      throw new Error(`ambienteRegistro inválido: ${JSON.stringify(amb)}`)
+      throw new ApiError('format', `ambienteRegistro inválido: ${JSON.stringify(amb)}`)
     }
 
     if (!Array.isArray(ambiente.sensores)) {
-      throw new Error(`sensores inválido para ambiente ${ambiente.ambienteRegistro}`)
+      throw new ApiError('format', `sensores inválido para ambiente ${ambiente.ambienteRegistro}`)
     }
 
     result[ambiente.ambienteRegistro] = {}
@@ -72,7 +73,7 @@ function normalizarOffsetMap(data: unknown): CalibratorOffsetMap {
       const sensor = sen as ApiSensor
 
       if (typeof sensor.codigo !== 'string' || typeof sensor.offset !== 'number') {
-        throw new Error(`Sensor inválido: ${JSON.stringify(sen)}`)
+        throw new ApiError('format', `Sensor inválido: ${JSON.stringify(sen)}`)
       }
 
       result[ambiente.ambienteRegistro][sensor.codigo] = sensor.offset

@@ -5,22 +5,42 @@ import { obtenerOffsets, type CalibratorOffsetMap } from './api/calibrador.api'
 import type { Ambiente } from './config/ambientes.config'
 import { RootDataContext } from './RootDataContext'
 import type { Sensor } from './types/sensor.types'
-import { obtenerBalizas, type ApiBaliza, type Semaforo } from './api/api.balizas'
+import { obtenerBalizas, type ApiBaliza } from './api/api.balizas'
 import { obtenerProcesosAmbiente, type ApiProcesoAmbiente } from './api/api.procesos'
+import { apiErrorKind, type ApiErrorKind } from './api/api.errors'
 
 export function RootDataProvider({ children }: { children: React.ReactNode }) {
   const [ambientes, setAmbientes] = useState<Ambiente[]>([])
+  const [ambientesError, setAmbientesError] = useState<ApiErrorKind | null>(null)
   const [activeTab, setActiveTab] = useState<number | null>(null)
   const [loaded, setLoaded] = useState(false)
   const [sensoresMap, setSensoresMap] = useState<Record<number, Sensor[]>>({})
+  const [sensoresLoaded, setSensoresLoaded] = useState<Record<number, boolean>>({})
+  const [sensoresError, setSensoresError] = useState<Record<number, ApiErrorKind | null>>({})
   const [offsetsMap, setOffsetsMap] = useState<CalibratorOffsetMap>({})
   const [balizas, setBalizas] = useState<Record<number, ApiBaliza>>({})
+  const [balizasError, setBalizasError] = useState<ApiErrorKind | null>(null)
+  const [balizasLoaded, setBalizasLoaded] = useState(false)
   const [procesosAmbiente, setProcesosAmbiente] = useState<Record<number, ApiProcesoAmbiente>>({})
+
+  const refreshSensores = useCallback((ambienteId: number) => {
+    return obtenerSensores(ambienteId)
+      .then(data => {
+        setSensoresMap(prev => ({ ...prev, [ambienteId]: data }))
+        setSensoresError(prev => ({ ...prev, [ambienteId]: null }))
+      })
+      .catch(error => {
+        console.error(`[API sensores] Fallo tunel ${ambienteId}:`, error)
+        setSensoresError(prev => ({ ...prev, [ambienteId]: apiErrorKind(error) }))
+      })
+      .finally(() => setSensoresLoaded(prev => ({ ...prev, [ambienteId]: true })))
+  }, [])
 
   useEffect(() => {
     obtenerAmbientes()
       .then(data => {
         setAmbientes(data)
+        setAmbientesError(null)
         setActiveTab(current =>
           current !== null && data.some(a => a.id === current)
             ? current
@@ -32,28 +52,21 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
         if (error instanceof Error && error.cause) {
           console.error('[API tuneles] Causa original:', error.cause)
         }
+        setAmbientesError(apiErrorKind(error))
       })
       .finally(() => setLoaded(true))
   }, [])
 
   useEffect(() => {
     if (ambientes.length === 0) return
-    ambientes.forEach(a => {
-      obtenerSensores(a.id)
-        .then(data => setSensoresMap(prev => ({ ...prev, [a.id]: data })))
-        .catch(error => console.error(`[API sensores] Fallo al cargar tunel ${a.id}:`, error))
-    })
-  }, [ambientes])
+    ambientes.forEach(a => refreshSensores(a.id))
+  }, [ambientes, refreshSensores])
 
   useEffect(() => {
     if (activeTab === null) return
-    const interval = setInterval(() => {
-      obtenerSensores(activeTab)
-        .then(data => setSensoresMap(prev => ({ ...prev, [activeTab]: data })))
-        .catch(error => console.error(`[API sensores] Fallo al polling tunel ${activeTab}:`, error))
-    }, 5_000)
+    const interval = setInterval(() => refreshSensores(activeTab), 5_000)
     return () => clearInterval(interval)
-  }, [activeTab])
+  }, [activeTab, refreshSensores])
 
   useEffect(() => {
     obtenerOffsets()
@@ -61,16 +74,24 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
       .catch(error => console.error('[API offsets] Fallo al cargar offsets:', error))
   }, [])
 
-  useEffect(() => {
-    const fetchBalizas = () => {
-      obtenerBalizas()
-        .then(data => setBalizas(Object.fromEntries(data.map(b => [b.id, b]))))
-        .catch(error => console.error('[API balizas] Fallo al cargar balizas:', error))
-    }
-    fetchBalizas()
-    const interval = setInterval(fetchBalizas, 5_000)
-    return () => clearInterval(interval)
+  const refreshBalizas = useCallback(() => {
+    return obtenerBalizas()
+      .then(data => {
+        setBalizas(Object.fromEntries(data.map(b => [b.id, b])))
+        setBalizasError(null)
+      })
+      .catch(error => {
+        console.error('[API balizas] Fallo al cargar balizas:', error)
+        setBalizasError(apiErrorKind(error))
+      })
+      .finally(() => setBalizasLoaded(true))
   }, [])
+
+  useEffect(() => {
+    refreshBalizas()
+    const interval = setInterval(refreshBalizas, 5_000)
+    return () => clearInterval(interval)
+  }, [refreshBalizas])
 
   useEffect(() => {
     const fetchProcesosAmbiente = () => {
@@ -102,47 +123,23 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
-  const updateBalizas = useCallback((id: number, int: number | null, ext: number | null, status: Semaforo | null) => {
-    setBalizas(prev => {
-      const existing = prev[id]
-      if (!existing) return prev
-      return {
-        ...prev,
-        [id]: {
-          ...existing,
-          int: int ?? existing.int,
-          ext: ext ?? existing.ext,
-          status: status ?? existing.status,
-        }
-      }
-    })
-  }, [])
-
-  const refreshSensores = useCallback((ambienteId: number) => {
-    obtenerSensores(ambienteId)
-      .then(data => setSensoresMap(prev => ({ ...prev, [ambienteId]: data })))
-      .catch(error => console.error(`[API sensores] Fallo al refrescar tunel ${ambienteId}:`, error))
-  }, [])
-
-  const refreshBalizas = useCallback(() => {
-    obtenerBalizas()
-      .then(data => setBalizas(Object.fromEntries(data.map(b => [b.id, b]))))
-      .catch(error => console.error('[API balizas] Fallo al cargar balizas:', error))
-  }, [])
-
   return (
     <RootDataContext.Provider value={{
       ambientes,
+      ambientesError,
       activeTab,
       setActiveTab,
       loaded,
       sensoresMap,
+      sensoresLoaded,
+      sensoresError,
       updateSensorHabilitado,
       offsetsMap,
       updateOffset,
       refreshSensores,
       balizas,
-      updateBalizas,
+      balizasError,
+      balizasLoaded,
       refreshBalizas,
       procesosAmbiente,
     }}>

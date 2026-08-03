@@ -1,5 +1,6 @@
 import type { Orientation, Sensor } from '../types/sensor.types'
 import { getApiUrl } from './api.config'
+import { ApiError } from './api.errors'
 
 function getSensoresArray(data: unknown, ambienteId: number): unknown[] {
   if (Array.isArray(data)) return data
@@ -9,7 +10,7 @@ function getSensoresArray(data: unknown, ambienteId: number): unknown[] {
     if (Array.isArray(sensores)) return sensores
   }
 
-  throw new Error(`La estructura no contiene un arreglo para el ambiente ${ambienteId}`)
+  throw new ApiError('format', `La estructura no contiene un arreglo para el ambiente ${ambienteId}`)
 }
 
 function isOrientation(value: unknown): value is Orientation {
@@ -22,7 +23,7 @@ function isOptionalNumber(value: unknown): value is number | null | undefined {
 
 function normalizarSensor(value: unknown): Sensor {
   if (typeof value !== 'object' || value === null) {
-    throw new Error('La estructura contiene un sensor invalido')
+    throw new ApiError('format', 'La estructura contiene un sensor invalido')
   }
 
   const sensor = value as Sensor
@@ -39,7 +40,7 @@ function normalizarSensor(value: unknown): Sensor {
     || typeof sensor.habilitado !== 'boolean'
     || (typeof sensor.valor !== 'number' && sensor.valor !== null)
   ) {
-    throw new Error(`Sensor invalido: ${JSON.stringify(value)}`)
+    throw new ApiError('format', `Sensor invalido: ${JSON.stringify(value)}`)
   }
 
   return {

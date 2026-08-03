@@ -3,17 +3,19 @@ import { useRootData } from '../RootDataContext'
 import { Nav } from '../ui/Nav'
 import { NumberInput } from '../ui/NumberInput'
 import { actualizarBaliza } from '../api/api.balizas'
-import type { Semaforo } from '../api/api.balizas'
+import type { ApiBaliza, Semaforo } from '../api/api.balizas'
 import { useCalibradorResponse } from '../hooks/useCalibradorResponse'
 import { Toast } from '../ui/Toast'
+import { StatusMessage } from '../ui/StatusMessage'
 
 type SemaforoStatus = Semaforo | 'none'
 
 type PendingBaliza = {
   int: number | null
   ext: number | null
-  status: SemaforoStatus | null
 }
+
+const EMPTY_PENDING: PendingBaliza = { int: null, ext: null }
 
 const LIGHTS: { key: SemaforoStatus; color: string; shadow: string, instructivo: string }[] = [
   { key: 'rojo', color: '#ef4444', shadow: '0 0 10px 2px #ef444488', instructivo: 'Sensor INT llegó al objetivo' },
@@ -44,60 +46,71 @@ function Semaforo({ status, onChange }: { status: SemaforoStatus; onChange: (s: 
 }
 
 export function Balizas() {
-  const { ambientes, activeTab, setActiveTab, balizas, updateBalizas, refreshBalizas, procesosAmbiente } = useRootData()
+  const { ambientes, activeTab, setActiveTab, balizas, balizasError, balizasLoaded, refreshBalizas, procesosAmbiente } = useRootData()
   const [pending, setPending] = useState<Record<number, PendingBaliza>>({})
   const [instructivoOpen, setInstructivoOpen] = useState(false)
+  const [loading, setLoading] = useState<{ id: number; msg: string } | null>(null)
 
   const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
   const getPending = (id: number): PendingBaliza =>
-    pending[id] ?? { int: null, ext: null, status: null }
+    pending[id] ?? EMPTY_PENDING
 
   const updatePending = useCallback((id: number, patch: Partial<PendingBaliza>) => {
     setPending(prev => ({
       ...prev,
-      [id]: { ...(prev[id] ?? { int: null, ext: null, status: null }), ...patch }
+      [id]: { ...(prev[id] ?? EMPTY_PENDING), ...patch }
     }))
   }, [])
 
-  const handleSemaforoChange = useCallback(async (b: { id: number; int: number | null; ext: number | null }, s: SemaforoStatus) => {
+  // Solo cambia el semáforo
+  const handleSemaforoChange = useCallback((b: ApiBaliza, s: SemaforoStatus) => {
+    setLoading({ id: b.id, msg: 'Cambiando el estado de las luces...' })
     wrapFunction(async () => {
-      updatePending(b.id, { status: s })
       await actualizarBaliza({ id: b.id, int: b.int, ext: b.ext, status: s === 'none' ? null : s })
-      refreshBalizas()
-    })
-  }, [refreshBalizas, updatePending, wrapFunction])
+      await refreshBalizas()
+    }).finally(() => setLoading(null))
+  }, [refreshBalizas, wrapFunction])
 
-  const handleGuardar = useCallback(async (id: number, int: number, ext: number, status: SemaforoStatus) => {
-    const apiStatus = status === 'none' ? null : status
-
+  // Solo cambia int/ext
+  const handleGuardar = useCallback((b: ApiBaliza, int: number | null, ext: number | null) => {
+    setLoading({ id: b.id, msg: 'Cambiando el objetivo de temperatura...' })
     wrapFunction(async () => {
-      await actualizarBaliza({ id, int, ext, status: apiStatus })
-      updateBalizas(id, int, ext, apiStatus)
-      setPending(prev => { const next = { ...prev }; delete next[id]; return next })
-      refreshBalizas()
-    })
-  }, [refreshBalizas, updateBalizas, wrapFunction])
+      await actualizarBaliza({ id: b.id, int, ext, status: b.status ?? null })
+      await refreshBalizas()
+      // Limpia el borrador tras refrescar, así el display salta directo al valor
+      // fresco del servidor sin regresar al viejo. En fallo no se llega acá.
+      setPending(prev => { const next = { ...prev }; delete next[b.id]; return next })
+    }).finally(() => setLoading(null))
+  }, [refreshBalizas, wrapFunction])
+
+  const items = Object.values(balizas)
 
   return (
     <>
       <div className="flex flex-col h-dvh overflow-hidden pt-4">
-        <main className="flex-1 pb-[30px] overflow-y-auto">
+        <main className="relative flex-1 pb-[30px] overflow-y-auto">
+          {items.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 p-6">
-            {Object.values(balizas).map(b => {
+            {items.map(b => {
               const p = getPending(b.id)
-              const status = (p.status ?? b.status ?? 'none') as SemaforoStatus
+              const status = (b.status ?? 'none') as SemaforoStatus
               const int = p.int ?? b.int ?? 0
               const ext = p.ext ?? b.ext ?? 0
 
               return (
                 <div
                   key={b.id}
-                  className="flex flex-row gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
+                  className="relative flex flex-row gap-4 overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
                 >
+                  {loading?.id === b.id && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center gap-3 bg-black/60">
+                      <span className="px-3 text-center text-sm font-semibold text-[var(--color-text-primary)]">{loading.msg}</span>
+                    </div>
+                  )}
                   <Semaforo
                     status={status}
-                    onChange={s => handleSemaforoChange({ id: b.id, int: b.int, ext: b.ext }, s)}
+                    onChange={s => handleSemaforoChange(b, s)}
                   />
 
                   <div className="flex flex-col gap-4 flex-1">
@@ -132,7 +145,7 @@ export function Balizas() {
                       type="button"
                       disabled={(p.int === null || p.int === b.int) && (p.ext === null || p.ext === b.ext)}
                       className="btn btn-primary w-full mt-auto"
-                      onClick={() => handleGuardar(b.id, int, ext, status)}
+                      onClick={() => handleGuardar(b, p.int ?? b.int, p.ext ?? b.ext)}
                     >
                       Guardar
                     </button>
@@ -141,6 +154,17 @@ export function Balizas() {
               )
             })}
           </div>
+          ) : (
+            <StatusMessage
+              loaded={balizasLoaded}
+              error={balizasError}
+              labels={{
+                fetch: 'No se pudo conectar con el servidor de balizas',
+                format: 'La respuesta de balizas tiene un formato inesperado',
+                empty: 'Sin balizas configuradas',
+              }}
+            />
+          )}
         </main>
         <button
           type="button"

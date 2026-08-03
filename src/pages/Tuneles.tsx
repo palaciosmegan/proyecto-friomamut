@@ -5,7 +5,7 @@ import { useRootData } from '../RootDataContext'
 import type { Sensor } from '../types/sensor.types'
 import { Chip } from '../ui/Chip'
 import { DataButton } from '../ui/DataButton'
-import { Message } from '../ui/Message'
+import { StatusMessage } from '../ui/StatusMessage'
 import { Nav } from '../ui/Nav'
 import { Toast } from '../ui/Toast'
 import { useCalibradorResponse } from '../hooks/useCalibradorResponse'
@@ -140,7 +140,7 @@ interface TunelesPanelProps {
 }
 
 const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
-  const { sensoresMap, updateSensorHabilitado } = useRootData()
+  const { sensoresMap, sensoresLoaded, sensoresError, updateSensorHabilitado } = useRootData()
   const sensores = useMemo(() => sensoresMap[ambiente.id] ?? [], [sensoresMap, ambiente.id])
   const { response, toastKey, wrapFunction, clearMessage } = useCalibradorResponse()
 
@@ -153,8 +153,6 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
       await actualizarSensorActivo(sensor.registroAmbienteEstructura!, sensor.registroSensor!, nuevoEstado)
     }).catch(() => updateSensorHabilitado(ambiente.id, sensorId, !nuevoEstado))
   }, [sensores, ambiente.id, updateSensorHabilitado, wrapFunction])
-
-  const sensoresLoaded = ambiente.id in sensoresMap
 
   return (
     <div className="relative w-full h-full">
@@ -176,9 +174,17 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
           style={{ gridRow: '1 / -1', gridColumn: '1 / -1' }}
         />
 
-        {sensoresLoaded && sensores.length === 0 ? (
+        {sensores.length === 0 ? (
           <div className="place-self-center" style={{ gridRow: '1 / -1', gridColumn: '1 / -1' }}>
-            <Message />
+            <StatusMessage
+              loaded={sensoresLoaded[ambiente.id] ?? false}
+              error={sensoresError[ambiente.id] ?? null}
+              labels={{
+                fetch: 'No se pudo conectar con el servidor de sensores',
+                format: 'La respuesta de sensores tiene un formato inesperado',
+                empty: 'Sin sensores configurados',
+              }}
+            />
           </div>
         ) : (
           <>
@@ -210,14 +216,22 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
 TunelesPanel.displayName = 'TunelesPanel'
 
 export function Tuneles() {
-  const { ambientes, activeTab, setActiveTab, loaded, procesosAmbiente } = useRootData()
+  const { ambientes, ambientesError, activeTab, setActiveTab, loaded, procesosAmbiente } = useRootData()
   const processActive = activeTab !== null ? procesosAmbiente[activeTab]?.tieneProceso : undefined
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden pt-4">
       <main className="flex-1 overflow-hidden pb-[30px] relative">
-        {loaded && ambientes.length === 0 ? (
-          <Message text="Sin tuneles configurados" />
+        {ambientes.length === 0 ? (
+          <StatusMessage
+            loaded={loaded}
+            error={ambientesError}
+            labels={{
+              fetch: 'No se pudo conectar con el servidor de túneles',
+              format: 'La respuesta de túneles tiene un formato inesperado',
+              empty: 'Sin túneles configurados',
+            }}
+          />
         ) : ambientes.map(ambiente => ambiente.id === activeTab && (
           <div key={ambiente.id} className="absolute inset-0 h-full">
             <TunelesPanel
