@@ -130,7 +130,7 @@ export function Balizas() {
 
                     <button
                       type="button"
-                      disabled={!int}
+                      disabled={(p.int === null || p.int === b.int) && (p.ext === null || p.ext === b.ext)}
                       className="btn btn-primary w-full mt-auto"
                       onClick={() => handleGuardar(b.id, int, ext, status)}
                     >
