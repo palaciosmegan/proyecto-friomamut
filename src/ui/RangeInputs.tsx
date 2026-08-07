@@ -24,10 +24,11 @@ interface RangeInputsProps {
 // (- input +), así que cada uno va envuelto en un flex para acomodarse en línea.
 export const RangeInputs = ({ rows, onChange, unit = '°C', step, idPrefix }: RangeInputsProps) => {
   return (
-    <div className="grid grid-cols-[auto_1fr_1fr] items-center gap-x-3 gap-y-2">
+    <div className="grid grid-cols-[auto_1fr_auto_1fr] items-center gap-x-3 gap-y-2">
       {/* Encabezados */}
       <span />
       <span className="text-center text-[0.65rem] uppercase tracking-wider text-[var(--color-text-secondary)]">Mín</span>
+      <span />
       <span className="text-center text-[0.65rem] uppercase tracking-wider text-[var(--color-text-secondary)]">Máx</span>
 
       {rows.map(row => (
@@ -42,6 +43,7 @@ export const RangeInputs = ({ rows, onChange, unit = '°C', step, idPrefix }: Ra
               onChange={v => onChange(row.key, 'min', v)}
             />
           </div>
+          <span aria-hidden="true" className="text-[var(--color-text-secondary)]">&lt;</span>
           <div className="flex items-center justify-center gap-1">
             <NumberInput
               id={idPrefix ? `${idPrefix}-${row.key}-max` : undefined}

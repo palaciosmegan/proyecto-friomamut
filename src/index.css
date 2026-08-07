@@ -487,6 +487,14 @@
     pointer-events: none;
   }
 
+  .balizas-page .btn:disabled {
+    opacity: 1;
+    background: #455163;
+    color: #9ca3af;
+    border-color: #4b5563;
+    box-shadow: none;
+  }
+
   .btn-primary {
     background: var(--gradient-primary);
     color: #fff;

@@ -197,7 +197,7 @@ export function Balizas() {
 
   return (
     <>
-      <div className="flex flex-col h-dvh overflow-hidden pt-4">
+      <div className="balizas-page flex flex-col h-dvh overflow-hidden pt-4">
         <main className="relative flex-1 pb-[30px] overflow-y-auto">
           <section
             aria-labelledby="config-global-heading"
@@ -300,7 +300,7 @@ export function Balizas() {
                 return (
                   <div key={b.id} className={clsx(a.id === activeTab ? '' : 'hidden', 'flex flex-col md:flex-row gap-4 p-6')}>
                     <div
-                      className="flex flex-col h-full gap-4 overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
+                      className="flex flex-col gap-4 overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-panel)] p-5 shadow-sm"
                     >
                       {/* overlay */}
                       {loading?.id === b.id && (
@@ -329,7 +329,7 @@ export function Balizas() {
                           onChange={s => handleSemaforoChange(b, s)}
                         />
 
-                        <div className="flex flex-col justify-between py-4">
+                        <div className="flex flex-col justify-between pt-2 pb-8">
                           {FLAGS.map(f => (
                             <FlagBadge key={f.key} active={b.flags[f.key]} label={f.label} status={status} />
                           ))}
