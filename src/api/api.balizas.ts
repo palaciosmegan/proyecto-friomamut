@@ -7,16 +7,41 @@ export type ApiBaliza = {
   id: number,
   label: string,
   processActive?: boolean
-  int: null | number
-  ext: null | number
   status?: null | 'verde' | 'ambar' | 'rojo'
+  flags: {
+    cambioFlujo: boolean,
+    estadoPrevio: boolean,
+    reanudado: boolean,
+  },
+  setpoints: {
+    cambio_flujo: {
+      externo: { min: number, max: number },
+      interno: { min: number, max: number },
+    },
+    fin_proceso: {
+      externo: { min: number, max: number },
+      interno: { min: number, max: number },
+    },
+    pulpa: number,
+  }
 }
 
-type ActualizarBaliza = {
+// Lógica de balizas
+/* 
+  verde: el proceso está en curso, acaba de empezar
+  ámbar: reanudado
+  rojo: proceso terminado
+
+  --------- parpadeando ---------
+  verde parpadeante: alarma de cambio de flujo
+  rojo parpadeante: alarma de pulpa
+*/
+
+export type RangoSetpoint = { min: number; max: number }
+
+export type ActualizarBaliza = {
   id: number,
-  int: null | number
-  ext: null | number
-  status: null | 'verde' | 'ambar' | 'rojo'
+  status?: null | 'verde' | 'ambar' | 'rojo'
 }
 
 async function validarResponse(response: Response, url: string) {

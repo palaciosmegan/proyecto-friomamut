@@ -165,7 +165,7 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 						Guardar registro
 					</button>
 					<button type="button" onClick={handleReset} className={hasChanges ? 'btn btn-primary' : 'btn btn-secondary'}>
-						Reset
+						Borrar cambios
 					</button>
 				</div>
 			</div>

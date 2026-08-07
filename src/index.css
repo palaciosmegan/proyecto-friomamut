@@ -103,6 +103,7 @@
   --color-border-default: rgba(33, 150, 243, 0.18);
   --color-border-strong: rgba(66, 165, 245, 0.35);
   --color-border-glow: rgba(66, 165, 245, 0.6);
+  --color-bg-panel: #0f304c;
 
   /* Gradients */
   --gradient-bg:
