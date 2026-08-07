@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { Ambiente } from './config/ambientes.config'
 import type { Sensor } from './types/sensor.types'
-import type { CalibratorOffsetMap } from './api/calibrador.api'
+import type { CalibratorOffsetMap } from './api/api.calibrador'
 import type { ApiBaliza } from './api/api.balizas'
 import type { ApiProcesoAmbiente } from './api/api.procesos'
 import type { ApiErrorKind } from './api/api.errors'

@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react'
-import { actualizarSensorActivo } from '../api/sensores.api'
+import { actualizarSensorActivo } from '../api/api.sensores'
 import type { Ambiente } from '../config/ambientes.config'
 import { useRootData } from '../RootDataContext'
 import type { Sensor } from '../types/sensor.types'
