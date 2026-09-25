@@ -64,7 +64,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (activeTab === null) return
-    const interval = setInterval(() => refreshSensores(activeTab), 5_000)
+    const interval = setInterval(() => refreshSensores(activeTab), 1_000)
     return () => clearInterval(interval)
   }, [activeTab, refreshSensores])
 
@@ -89,7 +89,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     refreshBalizas()
-    const interval = setInterval(refreshBalizas, 5_000)
+    const interval = setInterval(refreshBalizas, 1_000)
     return () => clearInterval(interval)
   }, [refreshBalizas])
 
@@ -100,7 +100,7 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
         .catch(error => console.error('[API procesos-ambiente] Fallo al cargar procesos-ambiente:', error))
     }
     fetchProcesosAmbiente()
-    const interval = setInterval(fetchProcesosAmbiente, 5_000)
+    const interval = setInterval(fetchProcesosAmbiente, 1_000)
     return () => clearInterval(interval)
   }, [])
 
