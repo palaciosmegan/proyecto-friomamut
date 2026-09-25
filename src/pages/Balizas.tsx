@@ -135,10 +135,18 @@ export function Balizas() {
   const getPending = (id: number): PendingBaliza =>
     pending[id] ?? EMPTY_PENDING
 
-  const tieneCambios = (p: PendingBaliza): boolean =>
-    p.cambioFlujo.interno !== null || p.cambioFlujo.externo !== null ||
-    p.finProceso.interno !== null || p.finProceso.externo !== null ||
-    p.pulpa !== null
+  const rangoIgual = (a: RangeValue, b: RangeValue): boolean => a.min === b.min && a.max === b.max
+
+  // true si el rango pendiente difiere del vigente en el servidor (null = sin tocar, nunca es cambio)
+  const rangoCambio = (pend: RangeValue | null, actual: RangeValue): boolean =>
+    pend !== null && !rangoIgual(pend, actual)
+
+  const tieneCambios = (p: PendingBaliza, b: ApiBaliza): boolean =>
+    rangoCambio(p.cambioFlujo.interno, b.setpoints.cambio_flujo.interno) ||
+    rangoCambio(p.cambioFlujo.externo, b.setpoints.cambio_flujo.externo) ||
+    rangoCambio(p.finProceso.interno, b.setpoints.fin_proceso.interno) ||
+    rangoCambio(p.finProceso.externo, b.setpoints.fin_proceso.externo) ||
+    (p.pulpa !== null && p.pulpa !== b.setpoints.pulpa)
 
   // Fija el rango interno/externo de un grupo de setpoints (cambio de flujo o fin de proceso) en el borrador.
   const setRango = useCallback((id: number, grupo: 'cambioFlujo' | 'finProceso', fila: 'interno' | 'externo', rango: RangeValue) => {
@@ -296,6 +304,7 @@ export function Balizas() {
                 const finProcesoInterno = p.finProceso.interno ?? b.setpoints.fin_proceso.interno
                 const finProcesoExterno = p.finProceso.externo ?? b.setpoints.fin_proceso.externo
                 const pulpaValue = p.pulpa ?? b.setpoints.pulpa
+                const cambios = tieneCambios(p, b)
 
                 return (
                   <div key={b.id} className={clsx(a.id === activeTab ? '' : 'hidden', 'flex flex-col md:flex-row gap-4 p-6')}>
@@ -394,13 +403,13 @@ export function Balizas() {
                           type="button"
                           className="btn btn-secondary"
                           onClick={() => setPending(prev => { const next = { ...prev }; delete next[b.id]; return next })}
-                          disabled={!tieneCambios(p)}
+                          disabled={!cambios}
                         >
                           Borrar cambios
                         </button>
                         <button
                           type="button"
-                          disabled={!tieneCambios(p)}
+                          disabled={!cambios}
                           className="btn btn-primary"
                           onClick={() => handleGuardar(b, p)}
                         >
