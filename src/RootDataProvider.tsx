@@ -7,6 +7,9 @@ import { RootDataContext } from './RootDataContext'
 import type { Sensor } from './types/sensor.types'
 import { obtenerBalizas, type ApiBaliza, type Semaforo } from './api/api.balizas'
 import { obtenerProcesosAmbiente, type ApiProcesoAmbiente } from './api/api.procesos'
+import { MOCK_AMBIENTE } from './mocks/tunelA.mock'
+
+const conMock = (data: Ambiente[]) => (import.meta.env.DEV ? [MOCK_AMBIENTE, ...data] : data)
 
 export function RootDataProvider({ children }: { children: React.ReactNode }) {
   const [ambientes, setAmbientes] = useState<Ambiente[]>([])
@@ -19,6 +22,12 @@ export function RootDataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     obtenerAmbientes()
+      .catch(error => {
+        if (!import.meta.env.DEV) throw error
+        console.error('[API tuneles] Fallo al cargar los tuneles, se muestra solo el mock:', error)
+        return []
+      })
+      .then(conMock)
       .then(data => {
         setAmbientes(data)
         setActiveTab(current =>
