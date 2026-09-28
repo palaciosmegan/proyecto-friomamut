@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import type { Ambiente } from "../config/ambientes.config";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Dropdown } from "./Dropdown";
+import { Chip, type ChipProps } from "./Chip";
 
 const ROUTES = [
 	{ value: '/', label: 'Túneles' },
@@ -14,15 +15,23 @@ interface NavProps {
 	activeId: number | null;
 	onSelect: (id: number) => void;
 	hideTabs?: boolean;
+	chip?: ChipProps | null;
 }
 
-export const Nav = ({ TABS, activeId, onSelect, hideTabs }: NavProps) => {
+export const Nav = ({ TABS, activeId, onSelect, hideTabs, chip }: NavProps) => {
 	const { pathname } = useLocation()
 	const navigate = useNavigate()
 	return (
 		<header className="w-full my-[20px]">
 			<nav className="grid grid-flow-col grid-cols-[1fr_auto_1fr] items-center max-w-full">
-				<div className="spacer"></div>
+				<div className="spacer sm:ml-4 md:ml-6 lg:ml-8">
+					{chip !== null && (
+						<Chip
+							label={chip?.label || ''}
+							variant={chip?.variant}
+						/>
+					)}
+				</div>
 				{hideTabs ?
 					<div className="spacer"></div>
 					:

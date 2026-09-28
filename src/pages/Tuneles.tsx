@@ -3,7 +3,6 @@ import { actualizarSensorActivo } from '../api/sensores.api'
 import type { Ambiente } from '../config/ambientes.config'
 import { useRootData } from '../RootDataContext'
 import type { Sensor } from '../types/sensor.types'
-import { Chip } from '../ui/Chip'
 import { DataButton } from '../ui/DataButton'
 import { NIVEL_BG } from '../config/niveles.config'
 import { Legend } from '../ui/Legend'
@@ -284,14 +283,6 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
       {response !== null && (
         <Toast key={toastKey} message={response.message} variant={response.ok ? 'success' : 'error'} callback={clearMessage} />
       )}
-      {hayNivel2 && (
-        <div className="absolute top-1 right-55 z-10">
-          <Legend items={[
-            { label: 'Nivel 1', color: NIVEL_BG[1] },
-            { label: 'Nivel 2', color: NIVEL_BG[2] },
-          ]} />
-        </div>
-      )}
       <div
         className="grid w-full h-full place-items-center items-stretch"
         style={{
@@ -306,6 +297,15 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
           className='rotate-180 w-full h-full object-fill -z-1'
           style={{ gridRow: '1 / -1', gridColumn: '1 / -1' }}
         />
+
+        {hayNivel2 && (
+          <div className="flex flex-col justify-center justify-self-end" style={{ gridArea: '1 / 10 / 1 / 12'}}>
+            <Legend items={[
+              { label: 'Nivel 1', color: NIVEL_BG[1] },
+              { label: 'Nivel 2', color: NIVEL_BG[2] },
+            ]} />
+          </div>
+        )}
 
         {sensoresLoaded && sensores.length === 0 ? (
           <div className="place-self-center" style={{ gridRow: '1 / -1', gridColumn: '1 / -1' }}>
@@ -365,24 +365,33 @@ export function Tuneles() {
       <main className="flex-1 overflow-hidden pb-[30px] relative">
         {loaded && ambientes.length === 0 ? (
           <Message text="Sin tuneles configurados" />
-        ) : ambientes.map(ambiente => ambiente.id === activeTab && (
-          <div key={ambiente.id} className="absolute inset-0 h-full">
-            <TunelesPanel
-              ambiente={ambiente}
-              imageVariant={ambiente.imageVariant ?? 'A'}
-            />
-          </div>
-        ))}
-        {activeTab !== null && (
-          <div className="absolute top-1 right-4 z-10">
-            <Chip
-              label={processActive ? 'Proceso activo' : 'Sin proceso activo'}
-              variant={processActive ? 'green' : 'gray'}
-            />
-          </div>
+        ) : (
+          ambientes.map(
+            (ambiente) =>
+              ambiente.id === activeTab && (
+                <div key={ambiente.id} className="absolute inset-0 h-full">
+                  <TunelesPanel
+                    ambiente={ambiente}
+                    imageVariant={ambiente.imageVariant ?? "A"}
+                  />
+                </div>
+              ),
+          )
         )}
       </main>
-      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
+      <Nav
+        TABS={ambientes}
+        activeId={activeTab}
+        onSelect={setActiveTab}
+        chip={
+          activeTab !== null
+            ? {
+                label: processActive ? "Proceso activo" : "Sin proceso activo",
+                variant: processActive ? "green" : "gray",
+              }
+            : null
+        }
+      />
     </div>
-  )
+  );
 }
