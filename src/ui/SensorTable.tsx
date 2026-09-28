@@ -3,6 +3,7 @@ import { Toggle } from "./Toggle"
 import type { Sensor } from "../types/sensor.types"
 import { NumberInput } from "./NumberInput"
 import type { PendingChange } from "../types/ui-types"
+import { NIVEL_BG } from "../config/niveles.config"
 
 interface SensorTableProps {
   sensores: Sensor[]
@@ -12,16 +13,15 @@ interface SensorTableProps {
   autoCalibrated?: Set<string>
   onAutocalibrar?: (codigoLectura: string, valor: number) => void
   unidad: string
+  titulo?: string
+  // Si viene, el panel toma el color del nivel (mismo que en la vista de túneles y su leyenda)
+  nivel?: number
+  // Offsets guardados por codigoLectura, para saber qué valores cambiaron
+  offsetsGuardados?: Record<string, number>
 }
 
-const orientationParsed = { INT: 'Interior', EXT: 'Exterior' }
 
-const getDisplayName = (sensor: Sensor) => {
-  const sensorName = sensor.id
-  return 'S' + sensorName.split('S')[1].replace(/^0+(?!$)/, '') + ' - ' + orientationParsed[sensor.orientation]
-}
-
-export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onVisibilidadChange, autoCalibrated, onAutocalibrar, unidad }: SensorTableProps) => {
+export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onVisibilidadChange, autoCalibrated, onAutocalibrar, unidad, titulo, nivel, offsetsGuardados }: SensorTableProps) => {
   const getChange = (sensor: Sensor): PendingChange =>
     pendingChanges[sensor.codigoLectura] ?? { offset: 0, visibilidad: true }
 
@@ -32,7 +32,20 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
   }
 
   return (
-    <div className="flex flex-1 min-h-0 min-w-0 h-full justify-center overflow-y-auto">
+    <div
+      className="grid grid-rows-[minmax(0,0.75rem)_auto_1fr] justify-center flex-1 min-h-0 min-w-0 h-full overflow-y-auto rounded-lg border border-[var(--color-border-default)] px-4 py-3 short:px-2 short:py-1.5"
+      style={nivel !== undefined ? { backgroundColor: `color-mix(in srgb, ${NIVEL_BG[nivel] ?? NIVEL_BG[1]} 60%, transparent)` } : undefined}
+    >
+      {/* Aire sobre el título: crece hasta 0.75rem solo si sobra espacio */}
+      <div />
+      {titulo ? (
+        <div className="inline-flex items-center gap-2 pb-2 short:pb-1 text-sm short:text-xs font-semibold uppercase tracking-wider text-[var(--color-blue-soft)]">
+          {nivel !== undefined && (
+            <span className="w-2.5 h-2.5 rounded-[3px] border border-green-500/40" style={{ backgroundColor: NIVEL_BG[nivel] ?? NIVEL_BG[1] }} />
+          )}
+          {titulo}
+        </div>
+      ) : <div />}
       <table className="border-collapse w-fit h-full">
         <thead>
           <tr className="border-b border-[var(--color-border-default)]">
@@ -57,7 +70,7 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
                   </td>
                   <td className="w-31 py-1 short:py-0.5 text-sm tracking-wider text-[var(--color-text-secondary)]">
                     <label htmlFor={sensor.id}>
-                      {getDisplayName(sensor)}
+                      {sensor.id}
                     </label>
                   </td>
                   <td className="py-1 short:py-0.5 align-middle">
@@ -66,6 +79,7 @@ export const SensorTable = memo(({ sensores, pendingChanges, onOffsetChange, onV
                         id={sensor.id}
                         value={change.offset}
                         unit={unidad}
+                        muted={change.offset === (offsetsGuardados?.[sensor.codigoLectura] ?? 0)}
                         onChange={val => onOffsetChange?.(sensor.codigoLectura, val)}
                       />
                     </div>

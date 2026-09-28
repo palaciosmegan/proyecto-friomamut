@@ -237,7 +237,7 @@
     letter-spacing: var(--tracking-normal);
     color: var(--color-text-primary);
     background-color: var(--color-abyss);
-    background-image: var(--gradient-bg);
+    /* background-image: var(--gradient-bg); */
     background-attachment: fixed;
   }
 
@@ -499,7 +499,6 @@
   .btn-primary {
     background: var(--gradient-primary);
     color: #fff;
-    box-shadow: 0 4px 20px rgba(21, 101, 192, 0.35);
   }
   .btn-primary:active {
     transform: scale(0.97);
@@ -513,6 +512,28 @@
     background: transparent;
     color: var(--color-text-secondary);
     border: none;
+  }
+  /* No depende de .btn */
+  .btn-tertiary {
+    background: var(--color-blue-dim);
+    border: 1px solid var(--color-blue-bright);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--text-base);
+    font-weight: 700;
+    line-height: 1;
+    user-select: none;
+    cursor: pointer;
+    transition: all var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-tertiary:active {
+    transform: scale(0.95);
+  }
+  @variant short {
+    .btn-tertiary {
+      padding: var(--spacing-1) var(--spacing-2);
+      font-size: var(--text-sm);
+    }
   }
   .btn-teal {
     background: linear-gradient(

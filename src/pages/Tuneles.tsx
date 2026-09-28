@@ -3,6 +3,7 @@ import { actualizarSensorActivo } from '../api/api.sensores'
 import type { Ambiente } from '../config/ambientes.config'
 import { useRootData } from '../RootDataContext'
 import type { Sensor } from '../types/sensor.types'
+import { Chip } from '../ui/Chip'
 import { DataButton } from '../ui/DataButton'
 import { StatusMessage } from '../ui/StatusMessage'
 import { NIVEL_BG } from '../config/niveles.config'
@@ -300,8 +301,8 @@ const TunelesPanel = memo(({ ambiente, imageVariant }: TunelesPanelProps) => {
         {hayNivel2 && (
           <div className="flex flex-col justify-center justify-self-end" style={{ gridArea: '1 / 10 / 1 / 12'}}>
             <Legend items={[
-              { label: 'Nivel 1', color: NIVEL_BG[1] },
-              { label: 'Nivel 2', color: NIVEL_BG[2] },
+              { label: 'Nivel A', color: NIVEL_BG[1] }, // primer piso, nivel 1
+              { label: 'Nivel B', color: NIVEL_BG[2] }, // segundo piso, nivel 2
             ]} />
           </div>
         )}
@@ -393,13 +394,13 @@ export function Tuneles() {
         TABS={ambientes}
         activeId={activeTab}
         onSelect={setActiveTab}
-        chip={
-          activeTab !== null
-            ? {
-                label: processActive ? "Proceso activo" : "Sin proceso activo",
-                variant: processActive ? "green" : "gray",
-              }
-            : null
+        utility={
+          activeTab !== null && (
+            <Chip
+              label={processActive ? 'Proceso activo' : 'Sin proceso activo'}
+              variant={processActive ? 'green' : 'gray'}
+            />
+          )
         }
       />
     </div>

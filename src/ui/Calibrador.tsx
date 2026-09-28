@@ -1,4 +1,5 @@
 import { memo, useMemo, useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { StatusMessage } from './StatusMessage'
 import { useRootData } from '../RootDataContext'
 import { SensorTable } from './SensorTable'
@@ -10,9 +11,11 @@ import { Toast } from './Toast'
 interface CalibradorProps {
 	ambienteId: number
 	isActive: boolean
+	// Nodo del nav donde se montan los botones; solo el calibrador activo los muestra
+	accionesContainer?: HTMLElement | null
 }
 
-export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
+export const Calibrador = memo(({ ambienteId, isActive, accionesContainer }: CalibradorProps) => {
 	const { sensoresMap, sensoresLoaded, sensoresError, offsetsMap, updateOffset, refreshSensores } = useRootData()
 	const sensores = useMemo(() => sensoresMap[ambienteId] ?? [], [sensoresMap, ambienteId])
 
@@ -111,8 +114,11 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 		setShowModal(false)
 	}, [sensores, pendingChanges, offsetsMap, ambienteId, updateOffset, refreshSensores, wrapFunction])
 
-	const left = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 100)
-	const right = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100)
+	const level2Exists = sensores.some(s => s.nivel === 2)
+	const intsLevel1 = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 100 && s.nivel === 1)
+	const extsLevel1 = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100 && s.nivel === 1)
+	const intsLevel2 = sensores.filter(s => s.posicion % 2 !== 0 && s.posicion < 100 && s.nivel === 2)
+	const extsLevel2 = sensores.filter(s => s.posicion % 2 === 0 && s.posicion < 100 && s.nivel === 2)
 
 	const hasChanges = sensores.some(s => {
 		const savedOffset = offsetsMap[ambienteId]?.[s.codigoLectura] ?? 0
@@ -135,40 +141,80 @@ export const Calibrador = memo(({ ambienteId }: CalibradorProps) => {
 						}}
 					/>
 				) : (
-					<div className="flex flex-1 min-h-0 flex-col hmi:flex-row gap-3 short:gap-1.5 items-stretch">
-						<SensorTable
-							sensores={left}
-							pendingChanges={pendingChanges}
-							onOffsetChange={handleOffsetChange}
-							onVisibilidadChange={handleVisibilidadChange}
-							autoCalibrated={autoCalibrated}
-							onAutocalibrar={handleAutocalibrar}
-							unidad="°C"
-						/>
-						<SensorTable
-							sensores={right}
-							pendingChanges={pendingChanges}
-							onOffsetChange={handleOffsetChange}
-							onVisibilidadChange={handleVisibilidadChange}
-							autoCalibrated={autoCalibrated}
-							onAutocalibrar={handleAutocalibrar}
-							unidad="°C"
-						/>
-					</div>
+					<>
+						{level2Exists && (
+							<div className="flex flex-1 min-h-0 flex-col hmi:flex-row gap-4 short:gap-1.5 items-stretch mt-3 short:mt-1">
+								<SensorTable
+									sensores={intsLevel2}
+									pendingChanges={pendingChanges}
+									onOffsetChange={handleOffsetChange}
+									onVisibilidadChange={handleVisibilidadChange}
+									autoCalibrated={autoCalibrated}
+									onAutocalibrar={handleAutocalibrar}
+									unidad="°C"
+									offsetsGuardados={offsetsMap[ambienteId]}
+									titulo="Sensores internos B"
+									nivel={2}
+								/>
+								<SensorTable
+									sensores={extsLevel2}
+									pendingChanges={pendingChanges}
+									onOffsetChange={handleOffsetChange}
+									onVisibilidadChange={handleVisibilidadChange}
+									autoCalibrated={autoCalibrated}
+									onAutocalibrar={handleAutocalibrar}
+									unidad="°C"
+									offsetsGuardados={offsetsMap[ambienteId]}
+									titulo="Sensores externos B"
+									nivel={2}
+								/>
+							</div>
+						)}
+
+						<div className="flex flex-1 min-h-0 flex-col hmi:flex-row gap-4 short:gap-1.5 items-stretch mt-3 short:mt-1">
+							<SensorTable
+								sensores={intsLevel1}
+								pendingChanges={pendingChanges}
+								onOffsetChange={handleOffsetChange}
+								onVisibilidadChange={handleVisibilidadChange}
+								autoCalibrated={autoCalibrated}
+								onAutocalibrar={handleAutocalibrar}
+								unidad="°C"
+								offsetsGuardados={offsetsMap[ambienteId]}
+								titulo={'Sensores internos' + (level2Exists ? ' A' : '')}
+								nivel={level2Exists ? 1 : undefined}
+							/>
+							<SensorTable
+								sensores={extsLevel1}
+								pendingChanges={pendingChanges}
+								onOffsetChange={handleOffsetChange}
+								onVisibilidadChange={handleVisibilidadChange}
+								autoCalibrated={autoCalibrated}
+								onAutocalibrar={handleAutocalibrar}
+								unidad="°C"
+								offsetsGuardados={offsetsMap[ambienteId]}
+								titulo={'Sensores externos' + (level2Exists ? ' A' : '')}
+								nivel={level2Exists ? 1 : undefined}
+							/>
+						</div>
+					</>
 				)}
-				<div className="flex shrink-0 gap-3 justify-end mt-4 short:mt-1.5 mr-6">
+			</div>
+			{isActive && accionesContainer && createPortal(
+				<>
 					<button
 						type="button"
 						onClick={() => setShowModal(true)}
-						className="btn btn-primary"
+						className={hasChanges ? 'btn btn-primary border border-transparent' : 'btn btn-secondary'}
 					>
-						Guardar registro
+						Guardar
 					</button>
-					<button type="button" onClick={handleReset} className={hasChanges ? 'btn btn-primary' : 'btn btn-secondary'}>
-						Borrar cambios
+					<button type="button" onClick={handleReset} className={hasChanges ? 'btn btn-primary border border-transparent' : 'btn btn-secondary'}>
+						Borrar
 					</button>
-				</div>
-			</div>
+				</>,
+				accionesContainer,
+			)}
 			{response !== null && (
 				<Toast
 					key={toastKey}

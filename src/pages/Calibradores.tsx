@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import clsx from 'clsx'
 import { useRootData } from '../RootDataContext'
 import { Nav } from '../ui/Nav'
@@ -6,6 +7,8 @@ import { StatusMessage } from '../ui/StatusMessage'
 
 export function Calibradores() {
   const { ambientes, ambientesError, activeTab, setActiveTab, loaded } = useRootData()
+  // Destino en el nav donde el Calibrador activo monta sus botones (portal)
+  const [navSlot, setNavSlot] = useState<HTMLDivElement | null>(null)
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden pt-4">
@@ -28,12 +31,18 @@ export function Calibradores() {
 						<Calibrador
 							ambienteId={a.id}
 							isActive={a.id === activeTab}
+							accionesContainer={navSlot}
 						/>
 					</div>
 				))}
 			</main>
 
-      <Nav TABS={ambientes} activeId={activeTab} onSelect={setActiveTab} />
+      <Nav
+        TABS={ambientes}
+        activeId={activeTab}
+        onSelect={setActiveTab}
+        utility={<div ref={setNavSlot} className="flex gap-3" />}
+      />
     </div>
   )
 }
