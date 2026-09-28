@@ -25,9 +25,9 @@ export const Nav = ({ TABS, activeId, onSelect, hideTabs, chip }: NavProps) => {
 		<header className="w-full my-[20px]">
 			<nav className="grid grid-flow-col grid-cols-[1fr_auto_1fr] items-center max-w-full">
 				<div className="spacer sm:ml-4 md:ml-6 lg:ml-8">
-					{chip !== null && (
+					{chip !== null && chip !== undefined && (
 						<Chip
-							label={chip?.label || ''}
+							label={chip?.label}
 							variant={chip?.variant}
 						/>
 					)}
