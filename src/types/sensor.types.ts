@@ -15,4 +15,5 @@ export type Sensor = {
   valor: number | null
   active: boolean // same as habilitado
   unidad: "°C"
+  nivel?: number
 }

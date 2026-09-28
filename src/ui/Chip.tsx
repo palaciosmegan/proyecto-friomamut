@@ -1,6 +1,6 @@
 import { clsx } from 'clsx'
 
-interface ChipProps {
+export interface ChipProps {
   label: string
   variant?: 'gray' | 'green'
 }

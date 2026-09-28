@@ -11,6 +11,7 @@ Cada ambiente tiene una `imageVariant` que va de la **A** a la **G**.
 |----------|----------|-------|------------|
 | A–F | `3.3fr repeat(8, 1fr) 2.7fr` | `repeat(7, 1fr)` | `DEFAULT_POSICIONES` |
 | G | `1.2fr repeat(8, 1fr) 1.35fr` | `1fr 1fr 1fr 2.2fr 1fr 1fr 1fr` | `G_POSICIONES` |
+| H | `1fr repeat(10, 1fr) 1fr` | `` | `H_POSICIONES` |
 
 Las posiciones están **hardcodeadas** en `src/pages/Tuneles.tsx`. Cada valor es un
 área de grid en formato `"fila/columna"` (y en G se usa además `/ span 2`).
@@ -78,6 +79,8 @@ Los valores visibles son `orientation` y `position`
 > La fila central en negrita (**101–106**) es la que va resaltada en amarillo — sensores especiales (`> 100`).
 
 ![tunel G](image.png)
+
+## `H_POSICIONES` (túnel californiano de 20 pallets con dos niveles)
 
 ## Notas
 

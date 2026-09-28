@@ -1,6 +1,7 @@
 import type { Orientation, Sensor } from '../types/sensor.types'
 import { getApiUrl } from './api.config'
 import { ApiError } from './api.errors'
+import { MOCK_SENSORES, MOCK_TUNEL_ID } from '../mocks/tunelA.mock'
 
 function getSensoresArray(data: unknown, ambienteId: number): unknown[] {
   if (Array.isArray(data)) return data
@@ -57,7 +58,8 @@ function normalizarSensor(value: unknown): Sensor {
     habilitado: sensor.habilitado,
     valor: typeof sensor.valor === 'number' ? sensor.valor : null,
     active: sensor.active,
-    unidad: sensor.unidad
+    unidad: sensor.unidad,
+    nivel: sensor.nivel ?? 1
   }
 }
 
@@ -71,6 +73,9 @@ async function validarResponse(response: Response, url: string) {
 }
 
 export async function obtenerSensores(ambienteId: number): Promise<Sensor[]> {
+  // El mock no pasa por normalizarSensor: se aplica el mismo default de nivel
+  if (import.meta.env.DEV && ambienteId === MOCK_TUNEL_ID) return MOCK_SENSORES.map(s => ({ ...s, nivel: s.nivel ?? 1 }))
+
   const url = getApiUrl(`/api/environments/${ambienteId}/active-process/structure`)
   const response = await fetch(url)
   await validarResponse(response, url)
